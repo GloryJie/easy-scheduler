@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d00256be-6163-4fff-93b9-6e9ff254f42e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/annotation/Action.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/annotation/Condition.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/annotation/NodeHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/annotation/Param.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/api/DagContext.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/api/DagEngine.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/api/DagGraph.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/api/DagNode.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/api/DagResult.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/api/DagState.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/api/NodeHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/api/NodeResult.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/api/NodeState.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/core/ConcurrentDagContxt.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/core/ConcurrentDagEngine.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/core/DagEngineException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/core/DagGraphBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/core/DefaultDagGraph.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/core/DefaultDagNode.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/core/DefaultNodeHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/core/MapDagContext.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/core/SingleThreadDagEngine.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/test/java/org/gloryjie/scheduler/core/DagEngineTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/test/java/org/gloryjie/scheduler/core/DagGraphBuilderTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/test/java/org/gloryjie/scheduler/core/DefaultDagNodeTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/test/java/org/gloryjie/scheduler/core/DefaultNodeHandlerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/easy-scheduler-core/src/test/java/org/gloryjie/scheduler/core/GuavaGraphTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jrt://C:/Program Files/JetBrains/IntelliJ IDEA 2021.1/jbr!/java.base/java/lang/SuppressWarnings.class" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="localRepository" value="C:\software\maven-repository" />
+        <option name="mavenHome" value="$PROJECT_DIR$/../../../software/apache-maven-3.8.1" />
+        <option name="userSettingsFile" value="C:\software-config\maven\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="2Y9COk7FzRdlg7zB4o4pJSnKK7l" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/workspace/zz-d2d/recycle_superman",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "settings.editor.selected.configurable": "http.proxy",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\workspace\my\easy-scheduler\easy-scheduler-core\src\main\java\org\gloryjie\scheduler" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.DagEngineTest">
+    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DagEngineTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="easy-scheduler-core" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.gloryjie.scheduler.core.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.gloryjie.scheduler.core" />
+      <option name="MAIN_CLASS_NAME" value="org.gloryjie.scheduler.core.DagEngineTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DagEngineTest.executeTimeoutFireTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="easy-scheduler-core" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.gloryjie.scheduler.core.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.gloryjie.scheduler.core" />
+      <option name="MAIN_CLASS_NAME" value="org.gloryjie.scheduler.core.DagEngineTest" />
+      <option name="METHOD_NAME" value="executeTimeoutFireTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DagEngineTest.fireSingleNodeGraphSucceededTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="easy-scheduler-core" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.gloryjie.scheduler.core.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.gloryjie.scheduler.core" />
+      <option name="MAIN_CLASS_NAME" value="org.gloryjie.scheduler.core.DagEngineTest" />
+      <option name="METHOD_NAME" value="fireSingleNodeGraphSucceededTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DagEngineTest.singleNodeFailedFireTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="easy-scheduler-core" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.gloryjie.scheduler.core.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.gloryjie.scheduler.core" />
+      <option name="MAIN_CLASS_NAME" value="org.gloryjie.scheduler.core.DagEngineTest" />
+      <option name="METHOD_NAME" value="singleNodeFailedFireTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DagEngineTest.singleNodeSucceededFireTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="easy-scheduler-core" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.gloryjie.scheduler.core.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.gloryjie.scheduler.core" />
+      <option name="MAIN_CLASS_NAME" value="org.gloryjie.scheduler.core.DagEngineTest" />
+      <option name="METHOD_NAME" value="singleNodeSucceededFireTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.DagEngineTest" />
+        <item itemvalue="JUnit.DagEngineTest.fireSingleNodeGraphSucceededTest" />
+        <item itemvalue="JUnit.DagEngineTest.singleNodeSucceededFireTest" />
+        <item itemvalue="JUnit.DagEngineTest.singleNodeFailedFireTest" />
+        <item itemvalue="JUnit.DagEngineTest.executeTimeoutFireTest" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d00256be-6163-4fff-93b9-6e9ff254f42e" name="Default Changelist" comment="" />
+      <created>1699928379863</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1699928379863</updated>
+      <workItem from="1699928382094" duration="576000" />
+      <workItem from="1699928976916" duration="190000" />
+      <workItem from="1699929214749" duration="1575000" />
+      <workItem from="1699933353464" duration="1275000" />
+      <workItem from="1699942214399" duration="102000" />
+      <workItem from="1699942421101" duration="52000" />
+      <workItem from="1699942485384" duration="46000" />
+      <workItem from="1699942545652" duration="86000" />
+      <workItem from="1699942644398" duration="277000" />
+      <workItem from="1699942936371" duration="203000" />
+      <workItem from="1699943151886" duration="5063000" />
+      <workItem from="1699948693780" duration="1340000" />
+      <workItem from="1699951898397" duration="9392000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/easy-scheduler-core/src/test/java/org/gloryjie/scheduler/core/DagEngineTest.java</url>
+          <line>32</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/core/ConcurrentDagEngine.java</url>
+          <line>260</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/core/ConcurrentDagEngine.java</url>
+          <line>250</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/easy-scheduler-core/src/main/java/org/gloryjie/scheduler/core/ConcurrentDagEngine.java</url>
+          <line>243</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
