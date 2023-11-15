@@ -5,11 +5,11 @@ import org.gloryjie.scheduler.api.DagContext;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ConcurrentDagContxt implements DagContext {
+public class ConcurrentDagContext implements DagContext {
 
     private final ConcurrentHashMap<String, Object> concurrentHashMap = new ConcurrentHashMap<>();
 
-    public ConcurrentDagContxt(Object userContext) {
+    public ConcurrentDagContext(Object userContext) {
         this.put(DagContext.USER_CONTEXT, userContext);
     }
 

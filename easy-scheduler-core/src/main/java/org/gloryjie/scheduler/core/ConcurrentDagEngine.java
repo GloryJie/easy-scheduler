@@ -17,9 +17,6 @@ import java.util.function.Function;
 @Slf4j
 public class ConcurrentDagEngine implements DagEngine {
 
-
-    ExecutorService executorService = Executors.newFixedThreadPool(5);
-
     private final ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1,
             runnable -> {
                 Thread thread = new Thread(runnable);
@@ -27,26 +24,44 @@ public class ConcurrentDagEngine implements DagEngine {
                 thread.setDaemon(true);
                 return thread;
             });
+    private final ExecutorSelector executorSelector;
 
+
+    public ConcurrentDagEngine() {
+        this(new ExecutorSelector() {
+            private final ExecutorService executorService = Executors.newFixedThreadPool(32);
+
+            @Override
+            public ExecutorService select(String graphName) {
+                return executorService;
+            }
+        });
+    }
+
+    public ConcurrentDagEngine(ExecutorSelector executorSelector) {
+        this.executorSelector = executorSelector;
+    }
 
     @Override
     public DagResult fire(DagGraph dagGraph, Object context) {
-        DagExecutor dagExecutor = new DagExecutor(executorService,dagGraph, new ConcurrentDagContxt(context), null);
-        dagExecutor.start();
-        return dagExecutor;
+        return this.fire(dagGraph, context, null);
     }
 
     @Override
     public DagResult fire(DagGraph dagGraph, Object context, Long timeout) {
-        DagExecutor dagExecutor = new DagExecutor(executorService,dagGraph, new ConcurrentDagContxt(context), timeout);
+        ExecutorService executorService = executorSelector.select(dagGraph.getGraphName());
+        ConcurrentDagContext dagContext = new ConcurrentDagContext(context);
+        DagExecutor dagExecutor = new DagExecutor(executorService, dagGraph, dagContext, timeout);
         dagExecutor.start();
         return dagExecutor;
     }
 
 
-    protected CompletableFuture<NodeResultImpl<Object>> submitNodeTimeoutFuture(DagNode<?> dagNode,
-                                                                                NodeResultImpl<Object> nodeResult,
-                                                                                CompletableFuture<NodeResultImpl<Object>> future) {
+    protected CompletableFuture<NodeResultImpl<Object>> wrapNodeFutureWithTimeout(
+            DagNode<?> dagNode,
+            NodeResultImpl<Object> nodeResult,
+            CompletableFuture<NodeResultImpl<Object>> future
+    ) {
         if (dagNode.timeout() == null) {
             return future;
         }
@@ -54,8 +69,11 @@ public class ConcurrentDagEngine implements DagEngine {
         CompletableFuture<NodeResultImpl<Object>> timeoutFuture = new CompletableFuture<>();
 
         scheduledExecutorService.schedule(() -> {
-            if (!future.isDone() && nodeResult.getState() == NodeState.RUNNING) {
+            if (!future.isDone()
+                    && (nodeResult.getState() == NodeState.WAITING || nodeResult.getState() == NodeState.RUNNING)) {
                 nodeResult.setState(NodeState.TIMEOUT);
+                String msg = "DagNode[" + dagNode.getNodeName() + "] not completed in " + dagNode.timeout() + "ms";
+                nodeResult.setThrowable(new TimeoutException(msg));
                 future.complete(nodeResult);
             }
         }, dagNode.timeout(), TimeUnit.MILLISECONDS);
@@ -115,22 +133,28 @@ public class ConcurrentDagEngine implements DagEngine {
         private final DagContext dagContext;
         private final Map<String, AtomicInteger> nodeInDegreeInfo;
         private final Long timeout;
+
+
+        /**
+         * Fields that change at run time
+         */
+        private final CountDownLatch countDownLatch;
         private final AtomicReference<DagState> dagStateRef = new AtomicReference<>(DagState.WAITING);
         private final ConcurrentHashMap<String, NodeState> nodeStateMap;
         private volatile Throwable throwable;
         private volatile long startTime;
         private volatile long endTime;
 
-        private CountDownLatch countDownLatch;
-
         public DagExecutor(ExecutorService executorService, DagGraph dagGraph, DagContext dagContext, Long timeout) {
             this.executorService = executorService;
             this.dagGraph = dagGraph;
             this.dagContext = dagContext;
             this.timeout = timeout;
-            // init
+
+            // init from dagGraph
             nodeInDegreeInfo = new ConcurrentHashMap<>();
-            dagGraph.getNodeInDegree().forEach((nodeName, inDegree) -> nodeInDegreeInfo.put(nodeName, new AtomicInteger(inDegree)));
+            dagGraph.getNodeInDegree().forEach((nodeName, inDegree) ->
+                    nodeInDegreeInfo.put(nodeName, new AtomicInteger(inDegree)));
             nodeStateMap = new ConcurrentHashMap<>();
             dagGraph.nodes().forEach(node -> nodeStateMap.put(node.getNodeName(), NodeState.WAITING));
 
@@ -149,8 +173,8 @@ public class ConcurrentDagEngine implements DagEngine {
                 if (timeout == null) {
                     countDownLatch.await();
                 } else {
-                    boolean awaitReuslt = countDownLatch.await(timeout, TimeUnit.MILLISECONDS);
-                    if (!awaitReuslt) {
+                    boolean awaitResult = countDownLatch.await(timeout, TimeUnit.MILLISECONDS);
+                    if (!awaitResult) {
                         log.warn("Graph[{}] timeout", dagGraph.getGraphName());
                         String msg = String.format("Graph[%s] not completed in %s ms",
                                 dagGraph.getGraphName(), timeout);
@@ -158,7 +182,8 @@ public class ConcurrentDagEngine implements DagEngine {
                     }
                 }
             } catch (InterruptedException e) {
-                this.throwable = e;
+                log.warn("Graph[{}] interrupted", dagGraph.getGraphName());
+                dagDone(DagState.INTERRUPTED, e);
             }
         }
 
@@ -208,73 +233,84 @@ public class ConcurrentDagEngine implements DagEngine {
             NodeResultImpl<Object> nodeResult = new NodeResultImpl<>(node.getNodeName());
             nodeResult.setSubmitTime(System.currentTimeMillis());
 
-            dagContext.putNodeResult(nodeResult.getNodeName(), nodeResult);
+            // Asynchronously execute the node
+            CompletableFuture<NodeResultImpl<Object>> nodeFuture =
+                    CompletableFuture.supplyAsync(() -> {
+                        // check state
+                        if (dagStateRef.get() != DagState.RUNNING
+                                || nodeStateMap.get(node.getNodeName()) != NodeState.WAITING) {
+                            return null;
+                        }
+                        nodeStateMap.put(node.getNodeName(), NodeState.RUNNING);
 
-            CompletableFuture<NodeResultImpl<Object>> nodeFuture = CompletableFuture.supplyAsync(() -> {
-                if (dagStateRef.get() != DagState.RUNNING) {
-                    return null;
-                }
-                nodeStateMap.put(node.getNodeName(), NodeState.RUNNING);
+                        executeNode(node, nodeResult);
 
-                nodeResult.setStartTime(System.currentTimeMillis());
-                nodeResult.setState(NodeState.RUNNING);
-                try {
-                    Object result = exeucteNode(node);
-                    nodeResult.setResult(result);
-                    nodeResult.setState(NodeState.SUCCEEDED);
-                } catch (Exception e) {
-                    nodeResult.setThrowable(e);
-                    nodeResult.setState(NodeState.FAILED);
-                }
+                        return nodeResult;
+                    }, executorService);
 
-                nodeResult.setEndTime(System.currentTimeMillis());
-                return nodeResult;
-            }, executorService);
+            // Submit the node timeout future
+            CompletableFuture<NodeResultImpl<Object>> timeoutFuture =
+                    ConcurrentDagEngine.this.wrapNodeFutureWithTimeout(node, nodeResult, nodeFuture);
 
-            // submit node timeout future
-            nodeFuture = ConcurrentDagEngine.this.submitNodeTimeoutFuture(node, nodeResult, nodeFuture);
-
-
-            nodeFuture.thenAccept(curResult -> {
+            timeoutFuture.thenAccept(curResult -> {
                         // if curResult is null, just return
-                        // if dag is not running, just return
+                        // if dag state is not running, just return
                         // if node state is not running (timeout or other situation), just return
-                        if (curResult == null || dagStateRef.get() != DagState.RUNNING
-                                || nodeStateMap.get(curResult.getNodeName()) != NodeState.RUNNING) {
+                        if (curResult == null
+                                || dagStateRef.get() != DagState.RUNNING
+                                || nodeStateMap.get(nodeResult.getNodeName()) != NodeState.RUNNING) {
                             return;
                         }
-
-                        nodeStateMap.put(node.getNodeName(), curResult.getState());
-
-                        // not succeeded
-                        if (curResult.getState() != NodeState.SUCCEEDED) {
-                            dagDone(DagState.FAILED, curResult.getThrowable());
-                            return;
-                        }
-
-                        // cur node execute succeeded, fire successor nodes
-                        fireNextNode(node);
+                        handleNodeExecuteResult(node, curResult);
                     })
                     .exceptionally(e -> {
-                        // could reach here just for safe check
                         // Throw a DagEngineException if an unknown exception occurs during execution
-                        log.error("Graph[{}] node[{}] execute encount unknown exception ",
+                        log.error("Graph[{}] node[{}] execute encounter unknown exception ",
                                 dagGraph.getGraphName(), node.getNodeName(), e);
-                        dagDone(DagState.FAILED, e);
+                        dagDone(DagState.FAILED, new DagEngineException("unknown exception happened: " + e.getMessage(), e));
                         return null;
                     });
-
-
         }
 
-        private Object exeucteNode(DagNode<?> node) throws Exception {
-            NodeHandler<?> handler = node.getHandler();
-            boolean evaluateResult = handler.evaluate(dagContext);
-            log.debug("Graph[{}] node[{}] evaluate result: {}", dagGraph.getGraphName(), node.getNodeName(), evaluateResult);
-            if (evaluateResult) {
-                return handler.execute(dagContext);
+        public void handleNodeExecuteResult(DagNode<?> node, NodeResultImpl<Object> nodeResult) {
+            log.debug("Graph[{}] node[{}] execute state: {} result: {}",
+                    dagGraph.getGraphName(), node.getNodeName(), nodeResult.getState(), nodeResult);
+
+            dagContext.putNodeResult(nodeResult.getNodeName(), nodeResult);
+            nodeStateMap.put(node.getNodeName(), nodeResult.getState());
+
+            // not succeeded
+            if (nodeResult.getState() != NodeState.SUCCEEDED) {
+                dagDone(DagState.FAILED, nodeResult.getThrowable());
+                return;
             }
-            return null;
+
+            // cur node execute succeeded, fire successor nodes
+            fireNextNode(node);
+        }
+
+
+        public void executeNode(DagNode<?> node, NodeResultImpl<Object> nodeResult) {
+
+            nodeResult.setStartTime(System.currentTimeMillis());
+            nodeResult.setState(NodeState.RUNNING);
+
+            try {
+                NodeHandler<?> handler = node.getHandler();
+                boolean evaluateResult = handler.evaluate(dagContext);
+
+                if (evaluateResult) {
+                    Object result = handler.execute(dagContext);
+                    nodeResult.setResult(result);
+                }
+
+                nodeResult.setState(NodeState.SUCCEEDED);
+            } catch (Exception e) {
+                nodeResult.setThrowable(e);
+                nodeResult.setState(NodeState.FAILED);
+            }
+
+            nodeResult.setEndTime(System.currentTimeMillis());
         }
 
 

@@ -12,7 +12,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DagEngineTest {
 
-    private final DagEngine dagEngine = new ConcurrentDagEngine();
+    private DagEngine dagEngine = new ConcurrentDagEngine();
+
+
 
 
     /**
@@ -26,7 +28,6 @@ public class DagEngineTest {
             testExecute.set(1);
             return "nodeResult";
         }));
-
 
         DagResult fireResult = dagEngine.fire(dagGraph, "testContext");
 
@@ -70,7 +71,6 @@ public class DagEngineTest {
         assertInstanceOf(TimeoutException.class, fireResult.getThrowable());
 
         //not check node state, could be timeout or running state
-
     }
 
     @SuppressWarnings({"all"})
