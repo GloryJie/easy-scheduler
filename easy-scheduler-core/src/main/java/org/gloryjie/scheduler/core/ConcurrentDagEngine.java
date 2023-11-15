@@ -29,7 +29,8 @@ public class ConcurrentDagEngine implements DagEngine {
 
     public ConcurrentDagEngine() {
         this(new ExecutorSelector() {
-            private final ExecutorService executorService = Executors.newFixedThreadPool(32);
+            private final ExecutorService executorService =
+                    Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
             @Override
             public ExecutorService select(String graphName) {
@@ -262,6 +263,9 @@ public class ConcurrentDagEngine implements DagEngine {
                             return;
                         }
                         handleNodeExecuteResult(node, curResult);
+
+                        // cur node execute succeeded, fire successor nodes
+                        fireNextNode(node);
                     })
                     .exceptionally(e -> {
                         // Throw a DagEngineException if an unknown exception occurs during execution
@@ -284,9 +288,6 @@ public class ConcurrentDagEngine implements DagEngine {
                 dagDone(DagState.FAILED, nodeResult.getThrowable());
                 return;
             }
-
-            // cur node execute succeeded, fire successor nodes
-            fireNextNode(node);
         }
 
 
