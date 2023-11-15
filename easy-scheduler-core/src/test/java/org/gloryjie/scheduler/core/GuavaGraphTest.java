@@ -6,12 +6,13 @@ import com.google.common.graph.MutableGraph;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("all")
 public class GuavaGraphTest {
 
     @Test
-    public void directedGraphTest() {
+    public void directedGraphTest() throws Exception{
 
         MutableGraph<String> mutableGraph = GraphBuilder.directed().allowsSelfLoops(false).build();
 

@@ -10,4 +10,6 @@ public @interface NodeHandler {
 
     String name();
 
+    String condition();
+
 }
