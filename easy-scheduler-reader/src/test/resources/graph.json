@@ -7,7 +7,7 @@
         "nodeName": "A",
         "timeout": 50,
         "dependsOn": [],
-        "handlerName": "test",
+        "handler": "test",
         "conditions": [
           "age == 10"
         ],

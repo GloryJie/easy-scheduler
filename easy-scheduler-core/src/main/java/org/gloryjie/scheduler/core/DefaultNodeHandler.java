@@ -49,7 +49,7 @@ public class DefaultNodeHandler<T> implements NodeHandler<T> {
 
 
     @Override
-    public T execute(DagContext dagContext) throws Exception {
+    public T execute(DagContext dagContext) {
         return action == null ? null : action.apply(dagContext);
     }
 

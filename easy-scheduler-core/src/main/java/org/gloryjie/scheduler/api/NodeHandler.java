@@ -16,7 +16,7 @@ public interface NodeHandler<R> {
     /**
      * node execute method
      */
-    R execute(DagContext dagContext) throws Exception;
+    R execute(DagContext dagContext);
 
 
     /**

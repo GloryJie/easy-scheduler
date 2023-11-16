@@ -16,7 +16,7 @@ public class DagNodeDefinition {
 
     private Set<String> dependsOn;
 
-    private String handlerName;
+    private String handler;
 
     private List<String> conditions;
 

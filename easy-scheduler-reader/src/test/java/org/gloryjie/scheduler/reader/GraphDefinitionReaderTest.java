@@ -35,7 +35,7 @@ public class GraphDefinitionReaderTest {
         DagNodeDefinition dagNodeDefinition = graphDefinition.getNodes().get(0);
         assertNotNull(dagNodeDefinition.getNodeName());
         assertNotNull(dagNodeDefinition.getTimeout());
-        assertNotNull(dagNodeDefinition.getHandlerName());
+        assertNotNull(dagNodeDefinition.getHandler());
         assertNotNull(dagNodeDefinition.getConditions());
         assertNotNull(dagNodeDefinition.getActions());
         assertNotNull(dagNodeDefinition.getDependsOn());
