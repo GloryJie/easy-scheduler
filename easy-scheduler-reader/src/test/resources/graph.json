@@ -1,0 +1,20 @@
+[
+  {
+    "graphName": "test",
+    "timeout": 1000,
+    "nodes": [
+      {
+        "nodeName": "A",
+        "timeout": 50,
+        "dependsOn": [],
+        "handlerName": "test",
+        "conditions": [
+          "age == 10"
+        ],
+        "actions": [
+          "age = age + 1"
+        ]
+      }
+    ]
+  }
+]
