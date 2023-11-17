@@ -4,6 +4,7 @@ import lombok.ToString;
 import org.gloryjie.scheduler.api.DagContext;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @ToString
 public class MapDagContext implements DagContext {
@@ -20,13 +21,18 @@ public class MapDagContext implements DagContext {
     }
 
     @Override
-    public Object getValue(String key) {
+    public Object get(String key) {
         return map.get(key);
     }
 
     @Override
     public Object remove(String key) {
         return map.remove(key);
+    }
+
+    @Override
+    public Map<String, Object> asMap() {
+        return new HashMap<>(map);
     }
 
 

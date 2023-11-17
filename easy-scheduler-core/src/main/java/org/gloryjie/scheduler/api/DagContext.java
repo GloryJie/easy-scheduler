@@ -3,6 +3,7 @@ package org.gloryjie.scheduler.api;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.Objects;
 
 public interface DagContext {
@@ -18,7 +19,7 @@ public interface DagContext {
      * @return The result of the node.
      */
     default NodeResult<?> getNodeResult(String nodeName) {
-        Object value = this.getValue(NODE_RESULT_PREFIX + nodeName);
+        Object value = this.get(NODE_RESULT_PREFIX + nodeName);
         return value == null ? null : (NodeResult<?>) value;
     }
 
@@ -41,7 +42,7 @@ public interface DagContext {
      */
     @Nullable
     default Object getContext() {
-        return this.getValue(USER_CONTEXT);
+        return this.get(USER_CONTEXT);
     }
 
     /**
@@ -61,7 +62,7 @@ public interface DagContext {
      * @return The value associated with the key, or null if the key is not found.
      */
     @Nullable
-    Object getValue(String key);
+    Object get(String key);
 
     /**
      * Removes a key-value from the contxt based on the specified key.
@@ -71,5 +72,8 @@ public interface DagContext {
      */
     @CanIgnoreReturnValue
     Object remove(String key);
+
+
+    Map<String,Object> asMap();
 
 }

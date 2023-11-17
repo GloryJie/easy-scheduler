@@ -1,0 +1,13 @@
+graphName: "test"
+timeout: 1000
+nodes:
+  - nodeName: "A"
+    timeout: 500
+    dependsOn: []
+    handler: "asdasd"
+  - nodeName: "B"
+    timeout: 600
+    dependsOn: ["A"]
+  - nodeName: "C"
+    timeout: 700
+    dependsOn: [ "A", "B" ]

@@ -2,6 +2,8 @@ package org.gloryjie.scheduler.core;
 
 import org.gloryjie.scheduler.api.DagContext;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,12 +23,17 @@ public class ConcurrentDagContext implements DagContext {
     }
 
     @Override
-    public Object getValue(String key) {
+    public Object get(String key) {
         return concurrentHashMap.get(key);
     }
 
     @Override
     public Object remove(String key) {
         return concurrentHashMap.remove(key);
+    }
+
+    @Override
+    public Map<String, Object> asMap() {
+        return new HashMap<>(concurrentHashMap);
     }
 }

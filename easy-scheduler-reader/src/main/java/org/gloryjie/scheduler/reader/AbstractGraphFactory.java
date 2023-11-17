@@ -52,7 +52,8 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
     protected DagNode<?> createDagNode(DagNodeDefinition nodeDefinition) {
 
         // get handler from factory if exists
-        NodeHandler<Object> originalNodeHandler = getHandler(nodeDefinition.getHandler());
+        NodeHandler<Object> originalNodeHandler = Optional.ofNullable(nodeDefinition.getHandler())
+                .map(this::getHandler).orElse(null);
         String handlerName = Optional.ofNullable(originalNodeHandler)
                 .map(NodeHandler::handlerName).orElse(ANONYMOUS_HANDLER);
 
