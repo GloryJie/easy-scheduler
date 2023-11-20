@@ -3,22 +3,17 @@ package org.gloryjie.scheduler.spel;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.gloryjie.scheduler.api.*;
-import org.gloryjie.scheduler.core.ConcurrentDagContext;
 import org.gloryjie.scheduler.core.ConcurrentDagEngine;
-import org.gloryjie.scheduler.core.MapDagContext;
 import org.gloryjie.scheduler.reader.GraphDefinitionReader;
 import org.gloryjie.scheduler.reader.JsonGraphDefinitionReader;
 import org.gloryjie.scheduler.reader.YamlGraphDefinitionReader;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.util.FileCopyUtils;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,7 +33,7 @@ public class SpelGraphFactoryTest {
     public void createSpelGraphTest(String fileType, SpelGraphFactory spelGraphFactory) throws Exception {
         File file = new File("src/test/resources/graph." + fileType);
         String cnt = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-        List<DagGraph> graphList = spelGraphFactory.create(cnt);
+        List<DagGraph> graphList = spelGraphFactory.createGraph(cnt);
 
         assertFalse(graphList.isEmpty());
         assertNotNull(graphList.get(0));
@@ -72,12 +67,14 @@ public class SpelGraphFactoryTest {
         assertEquals(DagState.SUCCESS, dagResult.getState());
 
         assertEquals(20, userContext.getAge());
+        assertEquals("male", userContext.getSex());
+        assertEquals("Amy", userContext.getName());
     }
 
 
     static Stream<Arguments> fileTypeAndReaderProvider() {
         return Stream.of(
-//                Arguments.of("json", new SpelGraphFactory(new JsonGraphDefinitionReader()))
+                Arguments.of("json", new SpelGraphFactory(new JsonGraphDefinitionReader())),
                 Arguments.of("yml", new SpelGraphFactory(new YamlGraphDefinitionReader()))
         );
     }

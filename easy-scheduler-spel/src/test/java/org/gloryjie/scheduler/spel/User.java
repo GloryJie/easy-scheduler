@@ -13,4 +13,7 @@ public class User {
 
     private String sex;
 
+
+    private String words;
+
 }

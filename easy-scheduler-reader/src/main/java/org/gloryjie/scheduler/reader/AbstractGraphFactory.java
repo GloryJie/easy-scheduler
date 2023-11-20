@@ -30,7 +30,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
 
 
     @Override
-    public List<DagGraph> create(String graphDefinition) throws Exception {
+    public List<DagGraph> createGraph(String graphDefinition) throws Exception {
         List<GraphDefinition> graphDefinitionList = reader.read(graphDefinition);
         return graphDefinitionList.stream().map(this::createDagGraph).collect(Collectors.toList());
     }

@@ -1,0 +1,46 @@
+[
+  {
+    "graphName": "test",
+    "timeout": 1000,
+    "nodes": [
+      {
+        "nodeName": "A",
+        "timeout": 500,
+        "dependsOn": [],
+        "conditions": [
+          "#{ context.age == 18 }"
+        ],
+        "actions": [
+          "#{ context.age = context.age + 2 }"
+        ]
+      },
+      {
+        "nodeName": "B",
+        "timeout": 600,
+        "dependsOn": [
+          "A"
+        ],
+        "conditions": [
+          "#{ context.age == 20 }"
+        ],
+        "actions": [
+          "#{ context.sex = 'male' }"
+        ]
+      },
+      {
+        "nodeName": "C",
+        "timeout": 700,
+        "dependsOn": [
+          "A",
+          "B"
+        ],
+        "conditions": [
+          "#{ context.sex == 'male' }"
+        ],
+        "actions": [
+          "#{ context.name = 'Amy' }"
+        ]
+      }
+    ]
+  }
+]

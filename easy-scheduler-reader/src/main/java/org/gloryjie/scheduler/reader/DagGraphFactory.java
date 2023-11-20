@@ -7,7 +7,7 @@ import java.util.List;
 public interface DagGraphFactory {
 
 
-    List<DagGraph> create(String graphDefinition) throws Exception;
+    List<DagGraph> createGraph(String graphDefinition) throws Exception;
 
 
 
