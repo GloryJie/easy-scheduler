@@ -12,6 +12,8 @@ import org.gloryjie.scheduler.core.DagGraphBuilder;
 import org.gloryjie.scheduler.core.DefaultDagNode;
 import org.gloryjie.scheduler.core.DefaultNodeHandler;
 import org.gloryjie.scheduler.reader.annotation.AnnotationDagGraphReader;
+import org.gloryjie.scheduler.reader.annotation.GraphDefinitionClassReader;
+import org.gloryjie.scheduler.reader.config.GraphDefinitionConfigReader;
 import org.gloryjie.scheduler.reader.config.JsonGraphDefinitionReader;
 import org.gloryjie.scheduler.reader.definition.DagNodeDefinition;
 import org.gloryjie.scheduler.reader.definition.GraphDefinition;

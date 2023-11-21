@@ -1,24 +1,19 @@
 package org.gloryjie.scheduler.spel;
 
 import org.gloryjie.scheduler.api.DagContext;
-import org.gloryjie.scheduler.api.NodeHandler;
 import org.gloryjie.scheduler.reader.AbstractGraphFactory;
-import org.gloryjie.scheduler.reader.GraphDefinitionConfigReader;
+import org.gloryjie.scheduler.reader.config.GraphDefinitionConfigReader;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.ParserContext;
 
 import javax.annotation.Nullable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class SpelGraphFactory extends AbstractGraphFactory {
 
-    private ConcurrentHashMap<String, NodeHandler<Object>> handlerMap = new ConcurrentHashMap<>();
-
-
     private BeanResolver beanResolver;
-    private ParserContext parserContext;
+    private final ParserContext parserContext;
 
 
     public SpelGraphFactory(GraphDefinitionConfigReader reader) {

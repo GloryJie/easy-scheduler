@@ -1,7 +1,6 @@
 package org.gloryjie.scheduler.reader.config;
 
 import com.google.common.collect.Lists;
-import org.gloryjie.scheduler.reader.GraphDefinitionConfigReader;
 import org.gloryjie.scheduler.reader.definition.GraphDefinition;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;

@@ -21,7 +21,7 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-package org.gloryjie.scheduler.reader;
+package org.gloryjie.scheduler.reader.annotation;
 
 
 import org.gloryjie.scheduler.reader.definition.GraphDefinition;
@@ -30,9 +30,9 @@ import java.util.List;
 
 
 @FunctionalInterface
-public interface GraphDefinitionConfigReader {
+public interface GraphDefinitionClassReader {
 
-    List<GraphDefinition> read(String content) throws Exception;
+    GraphDefinition read(Class<?> clazz) throws Exception;
 
 
 }

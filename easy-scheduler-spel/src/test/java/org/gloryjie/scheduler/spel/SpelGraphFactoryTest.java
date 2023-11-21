@@ -4,7 +4,7 @@ import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.gloryjie.scheduler.api.*;
 import org.gloryjie.scheduler.core.ConcurrentDagEngine;
-import org.gloryjie.scheduler.reader.GraphDefinitionConfigReader;
+import org.gloryjie.scheduler.reader.config.GraphDefinitionConfigReader;
 import org.gloryjie.scheduler.reader.config.JsonGraphDefinitionReader;
 import org.gloryjie.scheduler.reader.config.YamlGraphDefinitionReader;
 import org.junit.jupiter.params.ParameterizedTest;

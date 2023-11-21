@@ -1,6 +1,7 @@
 package org.gloryjie.scheduler.reader;
 
 import org.apache.commons.io.FileUtils;
+import org.gloryjie.scheduler.reader.config.GraphDefinitionConfigReader;
 import org.gloryjie.scheduler.reader.config.JsonGraphDefinitionReader;
 import org.gloryjie.scheduler.reader.config.YamlGraphDefinitionReader;
 import org.gloryjie.scheduler.reader.definition.DagNodeDefinition;

@@ -3,7 +3,7 @@ package org.gloryjie.scheduler.spel;
 import org.gloryjie.scheduler.api.DagContext;
 import org.gloryjie.scheduler.core.DagEngineException;
 import org.gloryjie.scheduler.core.MapDagContext;
-import org.gloryjie.scheduler.reader.GraphDefinitionConfigReader;
+import org.gloryjie.scheduler.reader.config.GraphDefinitionConfigReader;
 import org.gloryjie.scheduler.reader.config.YamlGraphDefinitionReader;
 import org.junit.jupiter.api.Test;
 
