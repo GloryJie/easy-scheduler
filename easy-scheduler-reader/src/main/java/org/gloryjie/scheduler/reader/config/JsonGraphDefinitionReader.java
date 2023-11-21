@@ -1,11 +1,14 @@
-package org.gloryjie.scheduler.reader;
+package org.gloryjie.scheduler.reader.config;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.gloryjie.scheduler.reader.GraphDefinitionConfigReader;
+import org.gloryjie.scheduler.reader.definition.GraphDefinition;
 
 import java.util.List;
 
-public class JsonGraphDefinitionReader implements GraphDefinitionReader {
+public class JsonGraphDefinitionReader implements GraphDefinitionConfigReader {
 
     private final ObjectMapper objectMapper;
 
@@ -13,7 +16,10 @@ public class JsonGraphDefinitionReader implements GraphDefinitionReader {
             = new TypeReference<List<GraphDefinition>>() {};
 
     public JsonGraphDefinitionReader() {
-        this.objectMapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        this.objectMapper = mapper;
     }
 
     public JsonGraphDefinitionReader(ObjectMapper objectMapper) {

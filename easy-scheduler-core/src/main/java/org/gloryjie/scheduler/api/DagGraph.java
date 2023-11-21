@@ -61,6 +61,6 @@ public interface DagGraph {
      * @param nodeName The name of the node.
      * @return A list of successor nodes.
      */
-    List<DagNode<?>> getSuccesorNodes(String nodeName);
+    List<DagNode<?>> getSuccessorNodes(String nodeName);
 
 }

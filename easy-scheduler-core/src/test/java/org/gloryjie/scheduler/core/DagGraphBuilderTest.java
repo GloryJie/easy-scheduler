@@ -45,11 +45,11 @@ public class DagGraphBuilderTest {
         assertEquals(1, nodeInDegreeInfo.get("A"));
         assertEquals(1, nodeInDegreeInfo.get(DagGraph.END_NODE_NAME));
 
-        assertNotNull(dagGraph.getSuccesorNodes(DagGraph.START_NODE_NAME));
-        assertSame(dagGraph.getSuccesorNodes(DagGraph.START_NODE_NAME).get(0), dagGraph.getNode("A"));
-        assertNotNull(dagGraph.getSuccesorNodes("A"));
-        assertSame(dagGraph.getEndNode(), dagGraph.getSuccesorNodes("A").get(0));
-        assertTrue(dagGraph.getSuccesorNodes(DagGraph.END_NODE_NAME).isEmpty());
+        assertNotNull(dagGraph.getSuccessorNodes(DagGraph.START_NODE_NAME));
+        assertSame(dagGraph.getSuccessorNodes(DagGraph.START_NODE_NAME).get(0), dagGraph.getNode("A"));
+        assertNotNull(dagGraph.getSuccessorNodes("A"));
+        assertSame(dagGraph.getEndNode(), dagGraph.getSuccessorNodes("A").get(0));
+        assertTrue(dagGraph.getSuccessorNodes(DagGraph.END_NODE_NAME).isEmpty());
     }
 
 
@@ -83,17 +83,17 @@ public class DagGraphBuilderTest {
         assertEquals(1, nodeInDegreeInfo.get("B"));
         assertEquals(2, nodeInDegreeInfo.get(DagGraph.END_NODE_NAME));
 
-        assertNotNull(dagGraph.getSuccesorNodes(DagGraph.START_NODE_NAME));
+        assertNotNull(dagGraph.getSuccessorNodes(DagGraph.START_NODE_NAME));
 
-        List<String> startSuccessorNodes = dagGraph.getSuccesorNodes(DagGraph.START_NODE_NAME)
+        List<String> startSuccessorNodes = dagGraph.getSuccessorNodes(DagGraph.START_NODE_NAME)
                 .stream().map(DagNode::getNodeName).collect(Collectors.toList());
         assertTrue(CollectionUtils.containsAll(startSuccessorNodes, Lists.newArrayList("A", "B")));
 
-        assertNotNull(dagGraph.getSuccesorNodes("A"));
-        assertNotNull(dagGraph.getSuccesorNodes("B"));
-        assertSame(dagGraph.getEndNode(), dagGraph.getSuccesorNodes("A").get(0));
-        assertSame(dagGraph.getEndNode(), dagGraph.getSuccesorNodes("B").get(0));
-        assertTrue(dagGraph.getSuccesorNodes(DagGraph.END_NODE_NAME).isEmpty());
+        assertNotNull(dagGraph.getSuccessorNodes("A"));
+        assertNotNull(dagGraph.getSuccessorNodes("B"));
+        assertSame(dagGraph.getEndNode(), dagGraph.getSuccessorNodes("A").get(0));
+        assertSame(dagGraph.getEndNode(), dagGraph.getSuccessorNodes("B").get(0));
+        assertTrue(dagGraph.getSuccessorNodes(DagGraph.END_NODE_NAME).isEmpty());
     }
 
 
@@ -130,17 +130,17 @@ public class DagGraphBuilderTest {
         assertEquals(1, nodeInDegreeInfo.get("B"));
         assertEquals(1, nodeInDegreeInfo.get(DagGraph.END_NODE_NAME));
 
-        assertNotNull(dagGraph.getSuccesorNodes(DagGraph.START_NODE_NAME));
+        assertNotNull(dagGraph.getSuccessorNodes(DagGraph.START_NODE_NAME));
 
-        List<String> startSuccessorNodes = dagGraph.getSuccesorNodes(DagGraph.START_NODE_NAME)
+        List<String> startSuccessorNodes = dagGraph.getSuccessorNodes(DagGraph.START_NODE_NAME)
                 .stream().map(DagNode::getNodeName).collect(Collectors.toList());
         assertTrue(CollectionUtils.containsAll(startSuccessorNodes, Lists.newArrayList("A")));
 
-        assertNotNull(dagGraph.getSuccesorNodes("A"));
-        assertNotNull(dagGraph.getSuccesorNodes("B"));
-        assertSame(dagGraph.getNode("B"), dagGraph.getSuccesorNodes("A").get(0));
-        assertSame(dagGraph.getEndNode(), dagGraph.getSuccesorNodes("B").get(0));
-        assertTrue(dagGraph.getSuccesorNodes(DagGraph.END_NODE_NAME).isEmpty());
+        assertNotNull(dagGraph.getSuccessorNodes("A"));
+        assertNotNull(dagGraph.getSuccessorNodes("B"));
+        assertSame(dagGraph.getNode("B"), dagGraph.getSuccessorNodes("A").get(0));
+        assertSame(dagGraph.getEndNode(), dagGraph.getSuccessorNodes("B").get(0));
+        assertTrue(dagGraph.getSuccessorNodes(DagGraph.END_NODE_NAME).isEmpty());
     }
 
 

@@ -1,10 +1,12 @@
 graphName: "test"
 timeout: 1000
+contextClass: "com.example.test.TestContext"
 nodes:
   - nodeName: "A"
     timeout: 50
     dependsOn: []
     handler: "test"
+    retFieldName: "aField"
     conditions:
       - "age == 10"
     actions:

@@ -4,9 +4,9 @@ import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.gloryjie.scheduler.api.*;
 import org.gloryjie.scheduler.core.ConcurrentDagEngine;
-import org.gloryjie.scheduler.reader.GraphDefinitionReader;
-import org.gloryjie.scheduler.reader.JsonGraphDefinitionReader;
-import org.gloryjie.scheduler.reader.YamlGraphDefinitionReader;
+import org.gloryjie.scheduler.reader.GraphDefinitionConfigReader;
+import org.gloryjie.scheduler.reader.config.JsonGraphDefinitionReader;
+import org.gloryjie.scheduler.reader.config.YamlGraphDefinitionReader;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SpelGraphFactoryTest {
 
 
-    GraphDefinitionReader reader = new YamlGraphDefinitionReader();
+    GraphDefinitionConfigReader reader = new YamlGraphDefinitionReader();
 
     SpelGraphFactory spelGraphFactory = new SpelGraphFactory(reader);
 

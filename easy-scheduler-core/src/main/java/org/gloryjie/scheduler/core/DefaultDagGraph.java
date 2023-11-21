@@ -67,7 +67,7 @@ public class DefaultDagGraph implements DagGraph {
     }
 
     @Override
-    public List<DagNode<?>> getSuccesorNodes(String nodeName) {
+    public List<DagNode<?>> getSuccessorNodes(String nodeName) {
         // The node's successor reads from the Graph instead of the dagNode
         // because the dagNode dependency could be modified by the outside
         return graph.successors(nodeName).stream()

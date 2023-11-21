@@ -1,4 +1,4 @@
-package org.gloryjie.scheduler.reader;
+package org.gloryjie.scheduler.reader.definition;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +11,8 @@ import java.util.Set;
 public class DagNodeDefinition {
 
     private String nodeName;
+
+    private String retFieldName;
 
     private Long timeout;
 

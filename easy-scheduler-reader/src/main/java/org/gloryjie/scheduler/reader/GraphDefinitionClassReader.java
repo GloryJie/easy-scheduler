@@ -24,13 +24,15 @@
 package org.gloryjie.scheduler.reader;
 
 
-import java.io.Reader;
+import org.gloryjie.scheduler.reader.definition.GraphDefinition;
+
 import java.util.List;
 
 
 @FunctionalInterface
-public interface GraphDefinitionReader {
+public interface GraphDefinitionClassReader {
 
-    List<GraphDefinition> read(String content) throws Exception;
+    GraphDefinition read(Class<?> clazz) throws Exception;
+
 
 }

@@ -3,7 +3,7 @@ package org.gloryjie.scheduler.spel;
 import org.gloryjie.scheduler.api.DagContext;
 import org.gloryjie.scheduler.api.NodeHandler;
 import org.gloryjie.scheduler.reader.AbstractGraphFactory;
-import org.gloryjie.scheduler.reader.GraphDefinitionReader;
+import org.gloryjie.scheduler.reader.GraphDefinitionConfigReader;
 import org.springframework.expression.BeanResolver;
 import org.springframework.expression.ParserContext;
 
@@ -21,17 +21,17 @@ public class SpelGraphFactory extends AbstractGraphFactory {
     private ParserContext parserContext;
 
 
-    public SpelGraphFactory(GraphDefinitionReader reader) {
+    public SpelGraphFactory(GraphDefinitionConfigReader reader) {
         super(reader);
         parserContext = ParserContext.TEMPLATE_EXPRESSION;
     }
 
-    public SpelGraphFactory(GraphDefinitionReader reader, ParserContext parserContext) {
+    public SpelGraphFactory(GraphDefinitionConfigReader reader, ParserContext parserContext) {
         super(reader);
         this.parserContext = parserContext;
     }
 
-    public SpelGraphFactory(GraphDefinitionReader reader, ParserContext parserContext, BeanResolver beanResolver) {
+    public SpelGraphFactory(GraphDefinitionConfigReader reader, ParserContext parserContext, BeanResolver beanResolver) {
         super(reader);
         this.parserContext = parserContext;
         this.beanResolver = beanResolver;
@@ -47,12 +47,6 @@ public class SpelGraphFactory extends AbstractGraphFactory {
     @Override
     protected Consumer<DagContext> createConsumer(String action) {
         return new SpelConsumer(action, parserContext, beanResolver);
-    }
-
-    @Nullable
-    @Override
-    protected NodeHandler<Object> getHandler(String handlerName) {
-        return handlerMap.get(handlerName);
     }
 
 

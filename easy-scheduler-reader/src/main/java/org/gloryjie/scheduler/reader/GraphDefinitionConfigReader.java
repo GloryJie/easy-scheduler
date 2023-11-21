@@ -21,14 +21,18 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-package org.gloryjie.scheduler.annotation;
-
-import java.lang.annotation.*;
+package org.gloryjie.scheduler.reader;
 
 
-@Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Condition {
+import org.gloryjie.scheduler.reader.definition.GraphDefinition;
+
+import java.util.List;
+
+
+@FunctionalInterface
+public interface GraphDefinitionConfigReader {
+
+    List<GraphDefinition> read(String content) throws Exception;
+
 
 }
