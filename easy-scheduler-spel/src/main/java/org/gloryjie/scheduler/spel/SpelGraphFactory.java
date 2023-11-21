@@ -22,6 +22,10 @@ public class SpelGraphFactory extends AbstractGraphFactory {
     private BeanResolver beanResolver;
     private final ParserContext parserContext;
 
+    public SpelGraphFactory() {
+        super();
+        parserContext = ParserContext.TEMPLATE_EXPRESSION;
+    }
 
     public SpelGraphFactory(GraphDefinitionConfigReader reader) {
         super(reader);

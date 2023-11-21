@@ -1,24 +1,30 @@
 graphName: "test"
 timeout: 1000
+contextClass: "org.gloryjie.scheduler.spel.UserInfoContext"
 nodes:
   - nodeName: "A"
     timeout: 500
     dependsOn: []
+    handler: "getUserSimpleInfoHandler"
+    retFieldName: "userInfo"
     conditions:
-      - "#{ context.age == 18 }"
-    actions:
-      - "#{ context.age = context.age + 2 }"
+      - "#{ context?.uid != null }"
   - nodeName: "B"
     timeout: 600
-    dependsOn: ["A"]
+    dependsOn: []
+    handler: "getUserCourseListHandler"
+    retFieldName: "courseList"
     conditions:
-      - "#{ context.age == 20 }"
-    actions:
-      - "#{ context.sex = 'male' }"
+      - "#{ context?.uid != null }"
   - nodeName: "C"
     timeout: 700
-    dependsOn: [ "A", "B" ]
+    dependsOn: ["B"]
+    handler: "getUserCourseScoreHandler"
+    retFieldName: "courseScoreList"
     conditions:
-      - "#{ context.sex == 'male' }"
+      - "#{context?.courseList != null}"
+  - nodeName: "D"
+    timeout: 700
+    dependsOn: ["B", "C"]
     actions:
-      - "#{ context.name = 'Amy' }"
+      - "#{context?.courseList?.add('Python')}"
