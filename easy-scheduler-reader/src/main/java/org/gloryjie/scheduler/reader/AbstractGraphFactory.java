@@ -1,8 +1,11 @@
 package org.gloryjie.scheduler.reader;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.gloryjie.scheduler.api.DagContext;
 import org.gloryjie.scheduler.api.DagGraph;
 import org.gloryjie.scheduler.api.DagNode;
@@ -13,6 +16,7 @@ import org.gloryjie.scheduler.core.DefaultDagNode;
 import org.gloryjie.scheduler.core.DefaultNodeHandler;
 import org.gloryjie.scheduler.reader.annotation.AnnotationDagGraphReader;
 import org.gloryjie.scheduler.reader.annotation.GraphDefinitionClassReader;
+import org.gloryjie.scheduler.reader.annotation.MethodNodeHandler;
 import org.gloryjie.scheduler.reader.config.GraphDefinitionConfigReader;
 import org.gloryjie.scheduler.reader.config.JsonGraphDefinitionReader;
 import org.gloryjie.scheduler.reader.definition.DagNodeDefinition;
@@ -20,10 +24,8 @@ import org.gloryjie.scheduler.reader.definition.GraphDefinition;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -40,12 +42,11 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
     private final Map<String, NodeHandler<Object>> handlerMap = new ConcurrentHashMap<>();
 
 
-
-    public AbstractGraphFactory(){
+    public AbstractGraphFactory() {
         this(new JsonGraphDefinitionReader(), new AnnotationDagGraphReader());
     }
 
-    public AbstractGraphFactory(GraphDefinitionConfigReader configReader){
+    public AbstractGraphFactory(GraphDefinitionConfigReader configReader) {
         this(configReader, new AnnotationDagGraphReader());
     }
 
@@ -58,7 +59,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
 
     @Override
     public List<DagGraph> createGraph(String graphDefinition) throws Exception {
-        if (configReader == null){
+        if (configReader == null) {
             throw new DagEngineException("Unsupported read text config");
         }
         List<GraphDefinition> graphDefinitionList = configReader.read(graphDefinition);
@@ -67,7 +68,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
 
     @Override
     public DagGraph createGraph(Class<?> clzz) throws Exception {
-        if (classReader == null){
+        if (classReader == null) {
             throw new DagEngineException("Unsupported read class config");
         }
         GraphDefinition graphDefinition = classReader.read(clzz);
@@ -101,9 +102,9 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
     protected DagNode<?> createDagNode(Class<?> contextClass, DagNodeDefinition nodeDefinition) {
         // get handler from factory if exists
         NodeHandler<Object> originalNodeHandler = null;
-        if (StringUtils.isNotEmpty(nodeDefinition.getHandler())){
+        if (StringUtils.isNotEmpty(nodeDefinition.getHandler())) {
             originalNodeHandler = this.getHandler(nodeDefinition.getHandler());
-            if (originalNodeHandler == null){
+            if (originalNodeHandler == null) {
                 throw new DagEngineException("Handler not found: " + nodeDefinition.getHandler());
             }
         }
@@ -138,11 +139,11 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
 
 
     private NodeHandler<Object> wrapHandlerCouldSetRetField(Class<?> contextClass,
-                                                        DagNodeDefinition nodeDefinition,
-                                                        NodeHandler<Object> nodeHandler){
+                                                            DagNodeDefinition nodeDefinition,
+                                                            NodeHandler<Object> nodeHandler) {
         // set field value if appoint field name
         if (contextClass != null && nodeHandler != null
-                && StringUtils.isNotEmpty(nodeDefinition.getRetFieldName())){
+                && StringUtils.isNotEmpty(nodeDefinition.getRetFieldName())) {
             Field field = FieldUtils.getField(contextClass, nodeDefinition.getRetFieldName(), true);
             if (field == null) {
                 throw new DagEngineException(String.format("field %s not found in class %s",
@@ -196,11 +197,9 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
     }
 
 
-    @Nullable
     protected abstract Predicate<DagContext> createCondition(String condition);
 
 
-    @Nullable
     protected abstract Consumer<DagContext> createConsumer(String action);
 
 
@@ -222,4 +221,39 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
         }
         handlerMap.put(handlerName, handler);
     }
+
+
+    @Override
+    public void registerMethodHandler(Object bean) {
+        Map<Method, MethodNodeHandler> methodMap = findMethodHandler(bean);
+        if (MapUtils.isEmpty(methodMap)) {
+            return;
+        }
+
+        for (Map.Entry<Method, MethodNodeHandler> entry : methodMap.entrySet()) {
+            Method method = entry.getKey();
+            MethodNodeHandler annotation = entry.getValue();
+
+            Predicate<DagContext> condition = null;
+            if (ArrayUtils.isNotEmpty(annotation.conditions())){
+                condition = Arrays.stream(annotation.conditions())
+                        .map(this::createCondition).reduce(null, (a, b) -> a != null ? a.and(b) : b);
+            }
+
+            MethodNodeHandlerImpl methodNodeHandler = new MethodNodeHandlerImpl(bean, method, annotation, condition);
+            this.registerHandler(methodNodeHandler);
+        }
+    }
+
+
+    protected Map<Method, MethodNodeHandler> findMethodHandler(Object bean) {
+        List<Method> methodList = MethodUtils.getMethodsListWithAnnotation(bean.getClass(), MethodNodeHandler.class);
+        if (CollectionUtils.isEmpty(methodList)) {
+            return Collections.emptyMap();
+        }
+
+        return methodList.stream().collect(Collectors.toMap(Function.identity(),
+                item -> item.getAnnotation(MethodNodeHandler.class)));
+    }
+
 }

@@ -1,14 +1,18 @@
 package org.gloryjie.scheduler.reader.annotation;
 
+
 import java.lang.annotation.*;
 
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface GraphClass {
+@Documented
+public @interface MethodNodeHandler {
 
-    String graphName() default "";
+    String value();
 
     long timeout() default 0;
 
-    String initMethod() default "";
+    String[] conditions() default {};
+
+
 }

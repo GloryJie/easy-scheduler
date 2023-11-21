@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 public class UserInfoContext {
 
-    private String uid;
+    private Integer uid;
 
     @GraphNode(handler = "getUserSimpleInfoHandler", dependsOn = "uid")
     private UserInfo userInfo;

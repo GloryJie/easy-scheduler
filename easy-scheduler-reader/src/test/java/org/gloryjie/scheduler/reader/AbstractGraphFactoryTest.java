@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 import org.gloryjie.scheduler.api.*;
 import org.gloryjie.scheduler.core.ConcurrentDagEngine;
 import org.gloryjie.scheduler.core.DagEngineException;
-import org.gloryjie.scheduler.reader.data.GetUserCourseListHandler;
-import org.gloryjie.scheduler.reader.data.GetUserCourseScoreHandler;
-import org.gloryjie.scheduler.reader.data.GetUserSimpleInfoHandler;
-import org.gloryjie.scheduler.reader.data.UserInfoContext;
+import org.gloryjie.scheduler.reader.data.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -43,9 +40,7 @@ public class AbstractGraphFactoryTest {
             DagGraph dagGraph = graphFactory.createGraph(UserInfoContext.class);
         });
 
-        graphFactory.registerHandler(new GetUserCourseScoreHandler());
-        graphFactory.registerHandler(new GetUserSimpleInfoHandler());
-        graphFactory.registerHandler(new GetUserCourseListHandler());
+        graphFactory.registerMethodHandler(new UserService());
 
         DagGraph dagGraph = graphFactory.createGraph(UserInfoContext.class);
 
@@ -61,6 +56,7 @@ public class AbstractGraphFactoryTest {
 
 
         UserInfoContext userInfoContext = new UserInfoContext();
+        userInfoContext.setUid(123);
         DagResult dagResult = dagEngine.fire(dagGraph, userInfoContext);
 
         // assert state
