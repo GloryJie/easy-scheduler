@@ -43,10 +43,6 @@ public class ConcurrentDagEngine implements DagEngine {
         this.executorSelector = executorSelector;
     }
 
-    @Override
-    public DagResult fire(DagGraph dagGraph, Object context) {
-        return this.fire(dagGraph, context, null);
-    }
 
     @Override
     public DagResult fire(DagGraph dagGraph, Object context, Long timeout) {

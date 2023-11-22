@@ -11,7 +11,9 @@ public interface DagEngine {
      * @param context  The execution context for the graph.
      * @return The result of scheduling the dag.
      */
-    DagResult fire(DagGraph dagGraph, Object context);
+    default DagResult fire(DagGraph dagGraph, Object context){
+        return fire(dagGraph, context, dagGraph.timeout());
+    }
 
 
     /**

@@ -78,7 +78,9 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
     protected DagGraph createDagGraph(GraphDefinition graphDefinition) {
         // TODO: 2023/11/20 check Graph definition
 
-        DagGraphBuilder dagGraphBuilder = new DagGraphBuilder().graphName(graphDefinition.getGraphName());
+        DagGraphBuilder dagGraphBuilder = new DagGraphBuilder()
+                .graphName(graphDefinition.getGraphName())
+                .timeout(graphDefinition.getTimeout());
 
         Class<?> contextClass = null;
         if (StringUtils.isNotEmpty(graphDefinition.getContextClass())) {

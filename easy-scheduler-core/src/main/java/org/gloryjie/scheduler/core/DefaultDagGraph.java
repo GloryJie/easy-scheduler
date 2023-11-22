@@ -21,9 +21,12 @@ public class DefaultDagGraph implements DagGraph {
     private ImmutableValueGraph<String, Integer> graph;
     private final Map<String, Integer> nodeInDegreeMap;
 
+    private Long timeout;
+
     public DefaultDagGraph(String graphName,
                            ImmutableValueGraph<String, Integer> graph,
-                           Map<String, DagNode<?>> dagNodeMap) {
+                           Map<String, DagNode<?>> dagNodeMap,
+                           Long timeout) {
         Objects.requireNonNull(graphName, "graph name must not be null");
         Objects.requireNonNull(graph, "graph must not be null");
         Objects.requireNonNull(dagNodeMap.get(DagGraph.START_NODE_NAME), "start node must not be null");
@@ -33,6 +36,7 @@ public class DefaultDagGraph implements DagGraph {
         this.graph = graph;
         nodeInDegreeMap = Collections.unmodifiableMap(graph.nodes().stream()
                 .collect(Collectors.toMap(Function.identity(), graph::inDegree)));
+        this.timeout = timeout;
     }
 
 

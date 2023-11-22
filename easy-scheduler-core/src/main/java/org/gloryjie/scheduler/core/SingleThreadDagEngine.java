@@ -16,14 +16,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SingleThreadDagEngine implements DagEngine {
 
-
-    @Override
-    public DagResult fire(DagGraph dagGraph, Object context) {
-        DagExecutor dagExecutor = new DagExecutor(dagGraph, new MapDagContext(context), null);
-        dagExecutor.start();
-        return dagExecutor;
-    }
-
     @Override
     public DagResult fire(DagGraph dagGraph, Object context, Long timeout) {
         DagExecutor dagExecutor = new DagExecutor(dagGraph, new MapDagContext(context), timeout);

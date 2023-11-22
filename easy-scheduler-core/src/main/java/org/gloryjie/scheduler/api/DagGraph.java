@@ -63,4 +63,9 @@ public interface DagGraph {
      */
     List<DagNode<?>> getSuccessorNodes(String nodeName);
 
+
+    default Long timeout(){
+        return null;
+    }
+
 }

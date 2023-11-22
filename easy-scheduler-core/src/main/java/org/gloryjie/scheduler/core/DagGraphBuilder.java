@@ -30,6 +30,8 @@ public class DagGraphBuilder {
 
     private  DagNode<?> endNode;
 
+    private Long timeout;
+
     public DagGraphBuilder() {
         mutableValueGraph = ValueGraphBuilder.directed().allowsSelfLoops(false).build();
         nodeMap = new HashMap<>();
@@ -37,6 +39,11 @@ public class DagGraphBuilder {
 
     public DagGraphBuilder graphName(String graphName) {
         this.graphName = graphName;
+        return this;
+    }
+
+    public DagGraphBuilder timeout(Long timeout) {
+        this.timeout = timeout;
         return this;
     }
 
@@ -74,7 +81,7 @@ public class DagGraphBuilder {
         // build dag graph
         ImmutableValueGraph immutableValueGraph = ImmutableValueGraph.copyOf(mutableValueGraph);
 
-        return new DefaultDagGraph(graphName, immutableValueGraph, nodeMap);
+        return new DefaultDagGraph(graphName, immutableValueGraph, nodeMap, timeout);
     }
 
 
