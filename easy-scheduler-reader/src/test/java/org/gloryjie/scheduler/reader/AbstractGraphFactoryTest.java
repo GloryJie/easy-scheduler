@@ -37,12 +37,12 @@ public class AbstractGraphFactoryTest {
     @Test
     void testClassGraphTest() throws Exception {
         Assertions.assertThrows(DagEngineException.class, ()->{
-            DagGraph dagGraph = graphFactory.createGraph(UserInfoContext.class);
+            DagGraph dagGraph = graphFactory.createClassGraph(UserInfoContext.class);
         });
 
         graphFactory.registerMethodHandler(new UserService());
 
-        DagGraph dagGraph = graphFactory.createGraph(UserInfoContext.class);
+        DagGraph dagGraph = graphFactory.createClassGraph(UserInfoContext.class);
 
         assertNotNull(dagGraph);
         assertEquals("org.gloryjie.scheduler.reader.data.UserInfoContext", dagGraph.getGraphName());

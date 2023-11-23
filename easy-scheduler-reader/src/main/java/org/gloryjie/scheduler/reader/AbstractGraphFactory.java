@@ -58,7 +58,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
 
 
     @Override
-    public List<DagGraph> createGraph(String graphDefinition) throws Exception {
+    public List<DagGraph> createConfigGraph(String graphDefinition) throws Exception {
         if (configReader == null) {
             throw new DagEngineException("Unsupported read text config");
         }
@@ -67,7 +67,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
     }
 
     @Override
-    public DagGraph createGraph(Class<?> clzz) throws Exception {
+    public DagGraph createClassGraph(Class<?> clzz) throws Exception {
         if (classReader == null) {
             throw new DagEngineException("Unsupported read class config");
         }

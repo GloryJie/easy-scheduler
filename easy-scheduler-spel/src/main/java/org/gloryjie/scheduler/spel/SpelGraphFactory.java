@@ -61,6 +61,7 @@ public class SpelGraphFactory extends AbstractGraphFactory {
         Map<Method, MethodNodeHandler> methodMap = null;
 
         try {
+            // use spring MethodIntrospector to find true method
             methodMap = MethodIntrospector.selectMethods(bean.getClass(),
                     (MethodIntrospector.MetadataLookup<MethodNodeHandler>) method
                             -> AnnotatedElementUtils.findMergedAnnotation(method, MethodNodeHandler.class));

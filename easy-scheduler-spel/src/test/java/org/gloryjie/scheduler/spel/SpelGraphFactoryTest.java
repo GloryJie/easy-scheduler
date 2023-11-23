@@ -31,7 +31,7 @@ public class SpelGraphFactoryTest {
 
         spelGraphFactory.registerMethodHandler(new UserService());
 
-        List<DagGraph> graphList = spelGraphFactory.createGraph(cnt);
+        List<DagGraph> graphList = spelGraphFactory.createConfigGraph(cnt);
 
         assertFalse(graphList.isEmpty());
         assertNotNull(graphList.get(0));
