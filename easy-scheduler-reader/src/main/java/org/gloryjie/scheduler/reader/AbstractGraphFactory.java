@@ -82,18 +82,9 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
                 .graphName(graphDefinition.getGraphName())
                 .timeout(graphDefinition.getTimeout());
 
-        Class<?> contextClass = null;
-        if (StringUtils.isNotEmpty(graphDefinition.getContextClass())) {
-            try {
-                contextClass = Class.forName(graphDefinition.getContextClass());
-            } catch (Exception e) {
-                throw new DagEngineException("Failed to load context class: " + graphDefinition.getContextClass(), e);
-            }
-        }
-
         List<DagNodeDefinition> nodeDefinitions = graphDefinition.getNodes();
         for (DagNodeDefinition nodeDefinition : nodeDefinitions) {
-            DagNode<?> dagNode = createDagNode(contextClass, nodeDefinition);
+            DagNode<?> dagNode = createDagNode(nodeDefinition);
             dagGraphBuilder.addNode(dagNode);
         }
 
@@ -101,7 +92,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
     }
 
 
-    protected DagNode<?> createDagNode(Class<?> contextClass, DagNodeDefinition nodeDefinition) {
+    protected DagNode<?> createDagNode(DagNodeDefinition nodeDefinition) {
         // get handler from factory if exists
         NodeHandler<Object> originalNodeHandler = null;
         if (StringUtils.isNotEmpty(nodeDefinition.getHandler())) {
@@ -117,10 +108,8 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
         // wrap handler predicate and expression
         Predicate<DagContext> predicate = createWhen(originalNodeHandler, nodeDefinition.getConditions());
 
-        originalNodeHandler = wrapHandlerCouldSetRetField(contextClass, nodeDefinition, originalNodeHandler);
-
         // wrap handler execution and expression
-        Function<DagContext, Object> action = createAction(originalNodeHandler, nodeDefinition.getActions());
+        Function<DagContext, Object> action = createAction(originalNodeHandler, nodeDefinition);
 
         // create new handler
         NodeHandler<Object> handler = DefaultNodeHandler.builder()
@@ -140,24 +129,6 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
     }
 
 
-    private NodeHandler<Object> wrapHandlerCouldSetRetField(Class<?> contextClass,
-                                                            DagNodeDefinition nodeDefinition,
-                                                            NodeHandler<Object> nodeHandler) {
-        // set field value if appoint field name
-        if (contextClass != null && nodeHandler != null
-                && StringUtils.isNotEmpty(nodeDefinition.getRetFieldName())) {
-            Field field = FieldUtils.getField(contextClass, nodeDefinition.getRetFieldName(), true);
-            if (field == null) {
-                throw new DagEngineException(String.format("field %s not found in class %s",
-                        nodeDefinition.getRetFieldName(), contextClass.getName()));
-            }
-
-            return new ContextSetFieldHandler(nodeHandler, field);
-        }
-        return nodeHandler;
-    }
-
-
     private Predicate<DagContext> createWhen(NodeHandler<Object> handler, List<String> conditions) {
         Predicate<DagContext> predicate = Optional.ofNullable(handler)
                 .map(item -> (Predicate<DagContext>) item::evaluate)
@@ -174,21 +145,40 @@ public abstract class AbstractGraphFactory implements DagGraphFactory, HandlerRe
         return predicate;
     }
 
-    private Function<DagContext, Object> createAction(NodeHandler<Object> handler, List<String> actions) {
+    private Function<DagContext, Object> createAction(NodeHandler<Object> handler,
+                                                      DagNodeDefinition nodeDefinition) {
+        List<String> actions = nodeDefinition.getActions();
 
-        // expression to consumer
+        // Create a consumer for each action and combine them into a single consumer
         Consumer<DagContext> expressConsumer = null;
         if (CollectionUtils.isNotEmpty(actions)) {
             expressConsumer = actions.stream()
                     .map(this::createConsumer)
-                    .reduce(expressConsumer, (a, b) -> a != null ? a.andThen(b) : b);
+                    .reduce(null, (a, b) -> a != null ? a.andThen(b) : b);
         }
 
         final Consumer<DagContext> mergeExpressConsumer = expressConsumer;
 
-        // create a function that execute the handler and expression
+        // Create a function that execute the handler and expression
+        final String fieldName = nodeDefinition.getRetFieldName();
         return dagContext -> {
             Object result = handler != null ? handler.execute(dagContext) : null;
+
+            Object context = dagContext.getContext();
+            try {
+                // If the result is not null and the context is not null, set the field to context
+                if (result != null && context != null && StringUtils.isNotEmpty(fieldName)) {
+                    Field field = FieldUtils.getField(context.getClass(), fieldName, true);
+                    if (field != null){
+                        FieldUtils.writeField(field, context, result, true);
+                    }
+                }
+            } catch (Exception e) {
+                String msg = String.format("Failed to set field: %s to context: %s", fieldName,
+                        context.getClass().getSimpleName());
+                throw new DagEngineException(msg, e);
+            }
+
             // execute other action
             if (mergeExpressConsumer != null) {
                 mergeExpressConsumer.accept(dagContext);

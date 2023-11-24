@@ -12,7 +12,9 @@ public class ConcurrentDagContext implements DagContext {
     private final ConcurrentHashMap<String, Object> concurrentHashMap = new ConcurrentHashMap<>();
 
     public ConcurrentDagContext(Object userContext) {
-        this.put(DagContext.USER_CONTEXT, userContext);
+        if (userContext != null){
+            this.put(DagContext.USER_CONTEXT, userContext);
+        }
     }
 
     @Override

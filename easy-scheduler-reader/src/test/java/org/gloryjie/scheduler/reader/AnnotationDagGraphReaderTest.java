@@ -22,7 +22,7 @@ public class AnnotationDagGraphReaderTest {
         assertEquals("org.gloryjie.scheduler.reader.data.UserInfoContext", graphDefinition.getGraphName());
         assertEquals(0, graphDefinition.getTimeout());
 
-        assertEquals(2, graphDefinition.getNodes().size());
+        assertEquals(3, graphDefinition.getNodes().size());
 
         DagNodeDefinition userInfoNode = graphDefinition.getNodes().get(0);
         assertEquals("userInfo", userInfoNode.getRetFieldName());
@@ -30,8 +30,8 @@ public class AnnotationDagGraphReaderTest {
 
 
         DagNodeDefinition courseInfoNode = graphDefinition.getNodes().get(1);
-        assertEquals("courses", courseInfoNode.getRetFieldName());
-        assertEquals("getUserCoursesHandler", userInfoNode.getHandler());
+        assertEquals("courseList", courseInfoNode.getRetFieldName());
+        assertEquals("getUserCourseListHandler", courseInfoNode.getHandler());
 
 
     }
