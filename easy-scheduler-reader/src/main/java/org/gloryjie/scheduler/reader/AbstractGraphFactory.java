@@ -3,6 +3,7 @@ package org.gloryjie.scheduler.reader;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.gloryjie.scheduler.api.DagContext;
 import org.gloryjie.scheduler.api.DagGraph;
 import org.gloryjie.scheduler.api.DagNode;
@@ -59,6 +60,8 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
                 .graphName(graphDefinition.getGraphName())
                 .timeout(graphDefinition.getTimeout());
 
+        setInitAndEndMethod(graphDefinition, dagGraphBuilder);
+
         List<DagNodeDefinition> nodeDefinitions = graphDefinition.getNodes();
         for (DagNodeDefinition nodeDefinition : nodeDefinitions) {
             DagNode<?> dagNode = createDagNode(nodeDefinition);
@@ -66,6 +69,42 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
         }
 
         return dagGraphBuilder.build();
+    }
+
+    private void setInitAndEndMethod(GraphDefinition definition, DagGraphBuilder builder) {
+        if (StringUtils.isNotEmpty(definition.getInitMethod())) {
+            final String initMethod = definition.getInitMethod();
+            builder.init(dagContext -> {
+                Object context = dagContext.getContext();
+                if (context == null) {
+                    throw new DagEngineException("Context is null, could not execute init method["
+                            + definition.getInitMethod() + "]");
+                }
+                try {
+                    MethodUtils.invokeMethod(context, initMethod);
+                } catch (Exception e) {
+                    throw new DagEngineException("Failed to execute init method["
+                            + definition.getInitMethod() + "]", e);
+                }
+            });
+        }
+
+        if (StringUtils.isNotEmpty(definition.getEndMethod())) {
+            final String method = definition.getEndMethod();
+            builder.end(dagContext -> {
+                Object context = dagContext.getContext();
+                if (context == null) {
+                    throw new DagEngineException("Context is null, could not execute end method["
+                            + definition.getInitMethod() + "]");
+                }
+                try {
+                    MethodUtils.invokeMethod(context, method);
+                } catch (Exception e) {
+                    throw new DagEngineException("Failed to execute end method["
+                            + definition.getInitMethod() + "]", e);
+                }
+            });
+        }
     }
 
 
