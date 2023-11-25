@@ -2,19 +2,22 @@
   {
     "graphName": "test",
     "timeout": 1000,
-    "contextClass": "com.example.test.TestContext",
     "nodes": [
       {
         "nodeName": "A",
         "timeout": 50,
-        "dependsOn": [],
-        "handler": "test",
+        "dependsOn": [
+          "z"
+        ],
+        "handler": "testA",
         "retFieldName": "aField",
         "conditions": [
-          "age == 10"
+          "age == 10",
+          "sex == 'male'"
         ],
         "actions": [
-          "age = age + 1"
+          "age = age + 1",
+          "sex = 'female'"
         ]
       }
     ]

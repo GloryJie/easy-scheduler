@@ -1,5 +1,6 @@
 package org.gloryjie.scheduler.reader;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.gloryjie.scheduler.reader.config.JsonGraphReader;
 import org.gloryjie.scheduler.reader.config.YamlGraphReader;
@@ -12,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
@@ -33,16 +35,16 @@ public class ConfigGraphReaderTest {
         assertNotNull(graphDefinition.getGraphName());
         assertNotNull(graphDefinition.getTimeout());
         assertNotNull(graphDefinition.getNodes());
-        assertNotNull(graphDefinition.getContextClass());
 
         DagNodeDefinition dagNodeDefinition = graphDefinition.getNodes().get(0);
-        assertNotNull(dagNodeDefinition.getNodeName());
-        assertNotNull(dagNodeDefinition.getTimeout());
-        assertNotNull(dagNodeDefinition.getHandler());
-        assertNotNull(dagNodeDefinition.getRetFieldName());
-        assertNotNull(dagNodeDefinition.getConditions());
-        assertNotNull(dagNodeDefinition.getActions());
-        assertNotNull(dagNodeDefinition.getDependsOn());
+        assertEquals("A",dagNodeDefinition.getNodeName());
+        assertEquals("testA",dagNodeDefinition.getHandler());
+        assertEquals("aField", dagNodeDefinition.getRetFieldName());
+        assertEquals(Sets.newHashSet("z"), dagNodeDefinition.getDependsOn());
+        assertEquals("age == 10", dagNodeDefinition.getConditions().get(0));
+        assertEquals("sex == 'male'", dagNodeDefinition.getConditions().get(1));
+        assertEquals("age = age + 1", dagNodeDefinition.getActions().get(0));
+        assertEquals("sex = 'female'", dagNodeDefinition.getActions().get(1));
     }
 
 

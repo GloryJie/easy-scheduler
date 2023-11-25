@@ -1,13 +1,17 @@
 package org.gloryjie.scheduler.core;
 
+import org.gloryjie.scheduler.api.DagContext;
 import org.gloryjie.scheduler.api.DagGraph;
 import org.gloryjie.scheduler.api.DagNode;
 import com.google.common.collect.Sets;
 import com.google.common.graph.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.gloryjie.scheduler.api.NodeHandler;
 
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("all")
@@ -26,11 +30,15 @@ public class DagGraphBuilder {
 
     private final Map<String, DagNode<?>> nodeMap;
 
-    private  DagNode<?> startNode;
+    private DagNode<?> startNode;
 
-    private  DagNode<?> endNode;
+    private DagNode<?> endNode;
 
     private Long timeout;
+
+    private Consumer<DagContext> initMethod;
+
+    private Consumer<DagContext> endMethod;
 
     public DagGraphBuilder() {
         mutableValueGraph = ValueGraphBuilder.directed().allowsSelfLoops(false).build();
@@ -66,6 +74,16 @@ public class DagGraphBuilder {
 
         nodeMap.put(dagNode.getNodeName(), dagNode);
 
+        return this;
+    }
+
+    public DagGraphBuilder init(Consumer<DagContext> consumer) {
+        this.initMethod = consumer;
+        return this;
+    }
+
+    public DagGraphBuilder end(Consumer<DagContext> consumer) {
+        this.endMethod = consumer;
         return this;
     }
 
@@ -126,9 +144,20 @@ public class DagGraphBuilder {
             throw new IllegalArgumentException("start nodes must not be empty");
         }
 
+
+        NodeHandler<Object> startHandler = null;
+        if (initMethod != null) {
+            startHandler = DefaultNodeHandler.builder()
+                    .handlerName(DagGraph.START_NODE_NAME)
+                    .action(dagContext -> {
+                        initMethod.accept(dagContext);
+                        return null;
+                    }).build();
+        }
+
         startNode = DefaultDagNode.builder()
                 .nodeName(DagGraph.START_NODE_NAME)
-                .handler(DefaultNodeHandler.builder().handlerName(DagGraph.START_NODE_NAME).build())
+                .handler(startHandler)
                 .build();
 
         nodeMap.put(DagGraph.START_NODE_NAME, startNode);
@@ -145,9 +174,18 @@ public class DagGraphBuilder {
             throw new IllegalArgumentException("end nodes must not be empty");
         }
 
+        NodeHandler<Object> endHandler = null;
+        if (endMethod != null) {
+            endHandler = DefaultNodeHandler.builder()
+                    .handlerName(DagGraph.END_NODE_NAME)
+                    .action(dagContext -> {
+                        endMethod.accept(dagContext);
+                        return null;
+                    }).build();
+        }
         endNode = DefaultDagNode.builder()
                 .nodeName(DagGraph.END_NODE_NAME)
-                .handler(DefaultNodeHandler.builder().handlerName(DagGraph.END_NODE_NAME).build())
+                .handler(endHandler)
                 .build();
         nodeMap.put(DagGraph.END_NODE_NAME, endNode);
         mutableValueGraph.addNode(endNode.getNodeName());
@@ -174,7 +212,7 @@ public class DagGraphBuilder {
         }
     }
 
-    private void checkGraphHasCycle(){
+    private void checkGraphHasCycle() {
         Graph<String> graph = mutableValueGraph.asGraph();
         if (Graphs.hasCycle(graph)) {
             throw new IllegalArgumentException("graph has cycle");

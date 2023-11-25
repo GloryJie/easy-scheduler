@@ -45,6 +45,8 @@ public class GraphClassAnnotationGraphReader implements AnnotationGraphReader {
         graphDefinition.setContextClass(aClass.getName());
         graphDefinition.setTimeout(graphClass.timeout());
         graphDefinition.setNodes(new ArrayList<>());
+        graphDefinition.setInitMethod(graphClass.initMethod());
+        graphDefinition.setEndMethod(graphClass.endMethod());
     }
 
     private void readGraphNodes(GraphDefinition graphDefinition, Class<?> aClass) {

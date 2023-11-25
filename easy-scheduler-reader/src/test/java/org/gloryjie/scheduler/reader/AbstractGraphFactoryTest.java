@@ -4,11 +4,10 @@ import com.google.common.collect.Lists;
 import org.gloryjie.scheduler.api.*;
 import org.gloryjie.scheduler.core.ConcurrentDagEngine;
 import org.gloryjie.scheduler.core.DagEngineException;
-import org.gloryjie.scheduler.reader.data.*;
+import org.gloryjie.scheduler.core.DefaultNodeHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -38,11 +37,11 @@ public class AbstractGraphFactoryTest {
             DagGraph dagGraph = graphFactory.createClassGraph(UserInfoContext.class);
         });
 
-
+        registerUserHandler(graphFactory);
         DagGraph dagGraph = graphFactory.createClassGraph(UserInfoContext.class);
 
         assertNotNull(dagGraph);
-        assertEquals("org.gloryjie.scheduler.reader.data.UserInfoContext", dagGraph.getGraphName());
+        assertEquals("org.gloryjie.scheduler.reader.UserInfoContext", dagGraph.getGraphName());
         assertNotNull(dagGraph.nodes());
         assertNotNull(dagGraph.getStartNode());
         assertNotNull(dagGraph.getEndNode());
@@ -79,5 +78,20 @@ public class AbstractGraphFactoryTest {
 
         assertEquals("Java", userInfoContext.getCourseScoreList().get(1).getCourseName());
         assertEquals(70, userInfoContext.getCourseScoreList().get(1).getScore());
+    }
+
+
+    private void registerUserHandler(AbstractGraphFactory graphFactory){
+        UserService userService = new UserService();
+
+        graphFactory.registerHandler(DefaultNodeHandler.builder().handlerName("getUserSimpleInfoHandler")
+                .action(userService::getUserSimpleInfoHandler).build());
+
+        graphFactory.registerHandler(DefaultNodeHandler.builder().handlerName("getUserCourseListHandler")
+                .action(userService::getCourseList).build());
+
+        graphFactory.registerHandler(DefaultNodeHandler.builder().handlerName("getUserCourseScoreHandler")
+                .action(userService::getCourseScoreList).build());
+
     }
 }

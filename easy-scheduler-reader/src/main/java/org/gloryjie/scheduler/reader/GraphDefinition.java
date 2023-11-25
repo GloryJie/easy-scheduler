@@ -13,6 +13,8 @@ public class GraphDefinition {
     private String graphName;
     private Long timeout;
     private String contextClass;
+    private String initMethod;
+    private String endMethod;
     private List<DagNodeDefinition> nodes;
 
 }

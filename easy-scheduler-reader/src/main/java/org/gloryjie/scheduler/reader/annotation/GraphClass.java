@@ -11,4 +11,6 @@ public @interface GraphClass {
     long timeout() default 0;
 
     String initMethod() default "";
+
+    String endMethod() default "";
 }

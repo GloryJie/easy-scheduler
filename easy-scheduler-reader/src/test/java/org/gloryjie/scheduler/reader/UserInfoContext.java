@@ -1,4 +1,4 @@
-package org.gloryjie.scheduler.reader.data;
+package org.gloryjie.scheduler.reader;
 
 
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import org.gloryjie.scheduler.reader.annotation.GraphNode;
 
 import java.util.List;
 
-@GraphClass
+@GraphClass(initMethod = "init", endMethod = "end")
 @Data
 public class UserInfoContext {
 

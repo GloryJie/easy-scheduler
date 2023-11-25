@@ -230,26 +230,31 @@ public class ConcurrentDagEngine implements DagEngine {
             NodeResultImpl<Object> nodeResult = new NodeResultImpl<>(node.getNodeName());
             nodeResult.setSubmitTime(System.currentTimeMillis());
 
-            // Asynchronously execute the node
-            CompletableFuture<NodeResultImpl<Object>> nodeFuture =
-                    CompletableFuture.supplyAsync(() -> {
-                        // check state
-                        if (dagStateRef.get() != DagState.RUNNING
-                                || nodeStateMap.get(node.getNodeName()) != NodeState.WAITING) {
-                            return null;
-                        }
-                        nodeStateMap.put(node.getNodeName(), NodeState.RUNNING);
+            CompletableFuture<NodeResultImpl<Object>> nodeFuture = null;
+            if (node.getHandler() == null) {
+                nodeStateMap.put(node.getNodeName(), NodeState.RUNNING);
+                executeNode(node, nodeResult);
+                nodeFuture = CompletableFuture.completedFuture(nodeResult);
+            } else {
+                // Asynchronously execute the node
+                nodeFuture =
+                        CompletableFuture.supplyAsync(() -> {
+                            // check state
+                            if (dagStateRef.get() != DagState.RUNNING
+                                    || nodeStateMap.get(node.getNodeName()) != NodeState.WAITING) {
+                                return null;
+                            }
+                            nodeStateMap.put(node.getNodeName(), NodeState.RUNNING);
 
-                        executeNode(node, nodeResult);
+                            executeNode(node, nodeResult);
 
-                        return nodeResult;
-                    }, executorService);
+                            return nodeResult;
+                        }, executorService);
+                // Submit the node timeout future
+                nodeFuture = ConcurrentDagEngine.this.wrapNodeFutureWithTimeout(node, nodeResult, nodeFuture);
+            }
 
-            // Submit the node timeout future
-            CompletableFuture<NodeResultImpl<Object>> timeoutFuture =
-                    ConcurrentDagEngine.this.wrapNodeFutureWithTimeout(node, nodeResult, nodeFuture);
-
-            timeoutFuture.thenAccept(curResult -> {
+            nodeFuture.thenAccept(curResult -> {
                         // if curResult is null, just return
                         // if dag state is not running, just return
                         // if node state is not running (timeout or other situation), just return
@@ -292,8 +297,12 @@ public class ConcurrentDagEngine implements DagEngine {
             nodeResult.setStartTime(System.currentTimeMillis());
             nodeResult.setState(NodeState.RUNNING);
 
+            NodeHandler<?> handler = node.getHandler();
+            if (handler == null) {
+                nodeResult.setState(NodeState.SUCCEEDED);
+                return;
+            }
             try {
-                NodeHandler<?> handler = node.getHandler();
                 boolean evaluateResult = handler.evaluate(dagContext);
 
                 if (evaluateResult) {

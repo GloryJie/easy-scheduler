@@ -1,7 +1,6 @@
 package org.gloryjie.scheduler.reader;
 
 import org.gloryjie.scheduler.reader.annotation.GraphClassAnnotationGraphReader;
-import org.gloryjie.scheduler.reader.data.UserInfoContext;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,9 +16,10 @@ public class GraphClassAnnotationGraphReaderTest {
 
         GraphDefinition graphDefinition = reader.read(UserInfoContext.class);
 
-        assertEquals("org.gloryjie.scheduler.reader.data.UserInfoContext", graphDefinition.getGraphName());
+        assertEquals("org.gloryjie.scheduler.reader.UserInfoContext", graphDefinition.getGraphName());
         assertEquals(0, graphDefinition.getTimeout());
-
+        assertEquals("init", graphDefinition.getInitMethod());
+        assertEquals("end", graphDefinition.getEndMethod());
         assertEquals(3, graphDefinition.getNodes().size());
 
         DagNodeDefinition userInfoNode = graphDefinition.getNodes().get(0);
