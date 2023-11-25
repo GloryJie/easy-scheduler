@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.gloryjie.scheduler.api.*;
 import org.gloryjie.scheduler.core.ConcurrentDagEngine;
+import org.gloryjie.scheduler.core.DefaultNodeHandler;
 import org.gloryjie.scheduler.reader.DagGraphConfigType;
 import org.gloryjie.scheduler.reader.config.JsonGraphReader;
 import org.gloryjie.scheduler.reader.config.YamlGraphReader;
@@ -30,7 +31,6 @@ public class SpelGraphFactoryTest {
         File file = new File("src/test/resources/graph." + configType.name().toLowerCase());
         String cnt = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
 
-        spelGraphFactory.registerMethodHandler(new UserService());
 
         List<DagGraph> graphList = spelGraphFactory.createConfigGraph(configType, cnt);
 
@@ -82,9 +82,21 @@ public class SpelGraphFactoryTest {
 
 
     static Stream<Arguments> fileTypeAndReaderProvider() {
+        SpelGraphFactory spelGraphFactory = new SpelGraphFactory();
+        UserService userService = new UserService();
+
+        spelGraphFactory.registerHandler(DefaultNodeHandler.builder().handlerName("getUserSimpleInfoHandler")
+                .action(userService::getUserSimpleInfoHandler).build());
+
+        spelGraphFactory.registerHandler(DefaultNodeHandler.builder().handlerName("getUserCourseListHandler")
+                .action(userService::getCourseList).build());
+
+        spelGraphFactory.registerHandler(DefaultNodeHandler.builder().handlerName("getUserCourseScoreHandler")
+                .action(userService::getCourseScoreList).build());
+
         return Stream.of(
-                Arguments.of(DagGraphConfigType.JSON, new SpelGraphFactory()),
-                Arguments.of(DagGraphConfigType.YAML, new SpelGraphFactory())
+                Arguments.of(DagGraphConfigType.JSON, spelGraphFactory),
+                Arguments.of(DagGraphConfigType.YAML, spelGraphFactory)
         );
     }
 

@@ -1,8 +1,10 @@
 package org.gloryjie.scheduler.spel;
 
 import com.google.common.collect.Lists;
-import org.gloryjie.scheduler.reader.annotation.ContextParam;
-import org.gloryjie.scheduler.reader.annotation.MethodNodeHandler;
+import org.gloryjie.scheduler.api.DagContext;
+import org.gloryjie.scheduler.api.NodeHandler;
+import org.gloryjie.scheduler.core.DefaultNodeHandler;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,16 +12,11 @@ import java.util.List;
 public class UserService {
 
 
-    @MethodNodeHandler("getUserCourseListHandler")
-    public List<String> getCourseList(@ContextParam( "uid") Integer uid){
-        System.out.println("getUserCourseListHandler param: " + uid);
+    public List<String> getCourseList(DagContext dagContext) {
         return Lists.newArrayList("Math", "Java", "Go", "Rust");
     }
 
-    @MethodNodeHandler("getUserCourseScoreHandler")
-    public List<UserInfoContext.Course> getCourseScoreList(@ContextParam( "uid") Integer uid){
-        System.out.println("getUserCourseScoreHandler param: " + uid);
-
+    public List<UserInfoContext.Course> getCourseScoreList(DagContext dagContext) {
         List<UserInfoContext.Course> courseList = new ArrayList<>();
         courseList.add(new UserInfoContext.Course("Math", 60));
         courseList.add(new UserInfoContext.Course("Java", 70));
@@ -27,9 +24,7 @@ public class UserService {
     }
 
 
-    @MethodNodeHandler("getUserSimpleInfoHandler")
-    public UserInfoContext.UserInfo getUserSimpleInfoHandler(@ContextParam( "uid")Integer uid){
-        System.out.println("getUserSimpleInfoHandler param: " + uid);
+    public UserInfoContext.UserInfo getUserSimpleInfoHandler(DagContext dagContext) {
 
         UserInfoContext.UserInfo userInfo = new UserInfoContext.UserInfo();
         userInfo.setName("Jack");
