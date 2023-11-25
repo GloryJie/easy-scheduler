@@ -14,7 +14,9 @@ import org.gloryjie.scheduler.core.DefaultNodeHandler;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -191,11 +193,35 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void registerHandler(NodeHandler<?> handler) {
+    public synchronized void registerHandler(NodeHandler<?> handler) {
         Objects.requireNonNull(handler, "Register handler cannot be null");
         Objects.requireNonNull(handler.handlerName(), "Register handler name cannot be null");
+        if (getHandler(handler.handlerName()) != null) {
+            throw new DagEngineException(String.format("Handler name[%s] already exists", handler.handlerName()));
+        }
         handlerMap.put(handler.handlerName(), (NodeHandler<Object>) handler);
     }
 
+
+    /**
+     * Creates a predicate for the specified condition.
+     *
+     * @param condition the condition string
+     * @return the condition Predicate
+     */
+    protected Predicate<DagContext> createCondition(String condition) {
+        throw new DagEngineException("Not support use condition");
+    }
+
+
+    /**
+     * Creates a consumer for the specified action.
+     *
+     * @param action the action for which to create a consumer
+     * @return the consumer for the specified action
+     */
+    protected Consumer<DagContext> createConsumer(String action) {
+        throw new DagEngineException("Not support use action");
+    }
 
 }

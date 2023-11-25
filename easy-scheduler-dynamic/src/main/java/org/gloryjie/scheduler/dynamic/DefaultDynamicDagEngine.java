@@ -2,10 +2,12 @@ package org.gloryjie.scheduler.dynamic;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.gloryjie.scheduler.api.*;
+import org.gloryjie.scheduler.api.DagEngine;
+import org.gloryjie.scheduler.api.DagGraph;
+import org.gloryjie.scheduler.api.DagResult;
+import org.gloryjie.scheduler.api.NodeHandler;
 import org.gloryjie.scheduler.core.DagEngineException;
 import org.gloryjie.scheduler.dynamic.annotation.MethodNodeHandler;
 import org.gloryjie.scheduler.reader.DagGraphConfigType;
@@ -14,10 +16,12 @@ import org.gloryjie.scheduler.reader.annotation.GraphClass;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class DefaultDynamicDagEngine implements DynamicDagEngine {
@@ -71,14 +75,7 @@ public class DefaultDynamicDagEngine implements DynamicDagEngine {
             Method method = entry.getKey();
             MethodNodeHandler annotation = entry.getValue();
 
-            Predicate<DagContext> condition = null;
-            if (ArrayUtils.isNotEmpty(annotation.conditions())){
-                condition = Arrays.stream(annotation.conditions())
-                        .map(conditionStr -> this.dagGraphFactory.createCondition(conditionStr))
-                        .reduce(null, (a, b) -> a != null ? a.and(b) : b);
-            }
-
-            MethodNodeHandlerImpl methodNodeHandler = new MethodNodeHandlerImpl(bean, method, annotation, condition);
+            MethodNodeHandlerImpl methodNodeHandler = new MethodNodeHandlerImpl(bean, method, annotation);
             this.registerHandler(methodNodeHandler);
         }
     }

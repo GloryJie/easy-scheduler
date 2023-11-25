@@ -12,7 +12,4 @@ public @interface MethodNodeHandler {
 
     long timeout() default 0;
 
-    String[] conditions() default {};
-
-
 }

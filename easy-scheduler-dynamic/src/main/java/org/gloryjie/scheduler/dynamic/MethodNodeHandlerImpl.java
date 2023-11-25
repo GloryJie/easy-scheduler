@@ -12,29 +12,21 @@ import org.gloryjie.scheduler.dynamic.annotation.MethodNodeHandler;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.function.Predicate;
 
 public class MethodNodeHandlerImpl implements NodeHandler<Object> {
 
 
-    private Object bean;
+    private final Object bean;
 
-    private Method method;
+    private final Method method;
 
-    private MethodNodeHandler annotation;
-
-    private Predicate<DagContext> condition;
+    private final MethodNodeHandler annotation;
 
 
     public MethodNodeHandlerImpl(Object bean, Method method, MethodNodeHandler annotation) {
-        this(bean, method, annotation, null);
-    }
-
-    public MethodNodeHandlerImpl(Object bean, Method method, MethodNodeHandler annotation, Predicate<DagContext> condition) {
         this.bean = bean;
         this.method = method;
         this.annotation = annotation;
-        this.condition = condition;
     }
 
 
@@ -43,10 +35,6 @@ public class MethodNodeHandlerImpl implements NodeHandler<Object> {
         return annotation.value();
     }
 
-    @Override
-    public boolean evaluate(DagContext dagContext) {
-        return condition == null || condition.test(dagContext);
-    }
 
     @Override
     public Object execute(DagContext dagContext) {
