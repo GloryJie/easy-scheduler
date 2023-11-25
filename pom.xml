@@ -12,6 +12,7 @@
         <module>easy-scheduler-core</module>
         <module>easy-scheduler-reader</module>
         <module>easy-scheduler-spel</module>
+        <module>easy-scheduler-dynamic</module>
     </modules>
 
     <properties>

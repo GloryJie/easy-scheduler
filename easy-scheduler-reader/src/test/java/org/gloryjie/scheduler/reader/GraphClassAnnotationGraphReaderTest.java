@@ -1,17 +1,15 @@
 package org.gloryjie.scheduler.reader;
 
-import org.gloryjie.scheduler.reader.annotation.AnnotationDagGraphReader;
+import org.gloryjie.scheduler.reader.annotation.GraphClassAnnotationGraphReader;
 import org.gloryjie.scheduler.reader.data.UserInfoContext;
-import org.gloryjie.scheduler.reader.definition.DagNodeDefinition;
-import org.gloryjie.scheduler.reader.definition.GraphDefinition;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AnnotationDagGraphReaderTest {
+public class GraphClassAnnotationGraphReaderTest {
 
 
-    AnnotationDagGraphReader reader = new AnnotationDagGraphReader();
+    GraphClassAnnotationGraphReader reader = new GraphClassAnnotationGraphReader();
 
 
     @Test

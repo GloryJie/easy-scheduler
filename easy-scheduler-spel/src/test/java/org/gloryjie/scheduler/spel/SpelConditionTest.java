@@ -3,8 +3,8 @@ package org.gloryjie.scheduler.spel;
 import org.gloryjie.scheduler.api.DagContext;
 import org.gloryjie.scheduler.core.DagEngineException;
 import org.gloryjie.scheduler.core.MapDagContext;
-import org.gloryjie.scheduler.reader.config.GraphDefinitionConfigReader;
-import org.gloryjie.scheduler.reader.config.YamlGraphDefinitionReader;
+import org.gloryjie.scheduler.reader.ConfigGraphReader;
+import org.gloryjie.scheduler.reader.config.YamlGraphReader;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Predicate;
@@ -13,11 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SpelConditionTest {
 
-
-
-    GraphDefinitionConfigReader reader = new YamlGraphDefinitionReader();
-
-    SpelGraphFactory spelGraphFactory = new SpelGraphFactory(reader);
+    SpelGraphFactory spelGraphFactory = new SpelGraphFactory();
 
     DagContext dagContext = createDagContext();
 

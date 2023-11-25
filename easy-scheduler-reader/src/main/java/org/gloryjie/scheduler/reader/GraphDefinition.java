@@ -1,7 +1,8 @@
-package org.gloryjie.scheduler.reader.definition;
+package org.gloryjie.scheduler.reader;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.gloryjie.scheduler.reader.DagNodeDefinition;
 
 import java.util.List;
 

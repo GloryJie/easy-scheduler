@@ -1,4 +1,4 @@
-package org.gloryjie.scheduler.reader.definition;
+package org.gloryjie.scheduler.reader;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -14,10 +14,4 @@ public interface HandlerRegistry {
     void registerHandler(NodeHandler<?> handler);
 
 
-
-    default void registerMethodHandler(Object bean){
-        throw new UnsupportedOperationException();
-    }
-
-
 }

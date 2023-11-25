@@ -1,4 +1,4 @@
-package org.gloryjie.scheduler.reader;
+package org.gloryjie.scheduler.dynamic;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -6,8 +6,8 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.gloryjie.scheduler.api.DagContext;
 import org.gloryjie.scheduler.api.NodeHandler;
 import org.gloryjie.scheduler.core.DagEngineException;
-import org.gloryjie.scheduler.reader.annotation.ContextParam;
-import org.gloryjie.scheduler.reader.annotation.MethodNodeHandler;
+import org.gloryjie.scheduler.dynamic.annotation.ContextParam;
+import org.gloryjie.scheduler.dynamic.annotation.MethodNodeHandler;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

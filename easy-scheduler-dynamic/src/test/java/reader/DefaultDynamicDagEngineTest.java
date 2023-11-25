@@ -1,20 +1,23 @@
-package org.gloryjie.scheduler.reader;
+package reader;
 
 import com.google.common.collect.Lists;
 import org.gloryjie.scheduler.api.*;
 import org.gloryjie.scheduler.core.ConcurrentDagEngine;
 import org.gloryjie.scheduler.core.DagEngineException;
-import org.gloryjie.scheduler.reader.data.*;
+import org.gloryjie.scheduler.dynamic.DefaultDynamicDagEngine;
+import org.gloryjie.scheduler.dynamic.DynamicDagEngine;
+import org.gloryjie.scheduler.reader.AbstractGraphFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import reader.data.UserInfoContext;
+import reader.data.UserService;
 
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AbstractGraphFactoryTest {
+public class DefaultDynamicDagEngineTest {
 
 
     private AbstractGraphFactory graphFactory = new AbstractGraphFactory(){
@@ -29,7 +32,7 @@ public class AbstractGraphFactoryTest {
         }
     };
 
-    private DagEngine dagEngine = new ConcurrentDagEngine();
+    private DynamicDagEngine dynamicDagEngine = new DefaultDynamicDagEngine(graphFactory, new ConcurrentDagEngine());
 
 
     @Test
@@ -38,23 +41,13 @@ public class AbstractGraphFactoryTest {
             DagGraph dagGraph = graphFactory.createClassGraph(UserInfoContext.class);
         });
 
-
-        DagGraph dagGraph = graphFactory.createClassGraph(UserInfoContext.class);
-
-        assertNotNull(dagGraph);
-        assertEquals("org.gloryjie.scheduler.reader.data.UserInfoContext", dagGraph.getGraphName());
-        assertNotNull(dagGraph.nodes());
-        assertNotNull(dagGraph.getStartNode());
-        assertNotNull(dagGraph.getEndNode());
-        assertNotNull(dagGraph.getNodeInDegree());
-        assertEquals(1, dagGraph.getNodeInDegree().get("userInfo"));
-        assertEquals(1, dagGraph.getNodeInDegree().get("courseList"));
-        assertEquals(1, dagGraph.getNodeInDegree().get("courseScoreList"));
+        dynamicDagEngine.registerMethodHandler(new UserService());
+        dynamicDagEngine.registerGraphClass(UserInfoContext.class);
 
 
         UserInfoContext userInfoContext = new UserInfoContext();
         userInfoContext.setUid(123);
-        DagResult dagResult = dagEngine.fire(dagGraph, userInfoContext);
+        DagResult dagResult = dynamicDagEngine.fireContext(userInfoContext);
 
         // assert state
         assertTrue(dagResult.isDone());

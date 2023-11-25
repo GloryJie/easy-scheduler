@@ -1,4 +1,4 @@
-package org.gloryjie.scheduler.reader.annotation;
+package org.gloryjie.scheduler.dynamic.annotation;
 
 import java.lang.annotation.*;
 

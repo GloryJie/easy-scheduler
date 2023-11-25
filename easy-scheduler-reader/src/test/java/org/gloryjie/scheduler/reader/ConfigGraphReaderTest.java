@@ -1,11 +1,8 @@
 package org.gloryjie.scheduler.reader;
 
 import org.apache.commons.io.FileUtils;
-import org.gloryjie.scheduler.reader.config.GraphDefinitionConfigReader;
-import org.gloryjie.scheduler.reader.config.JsonGraphDefinitionReader;
-import org.gloryjie.scheduler.reader.config.YamlGraphDefinitionReader;
-import org.gloryjie.scheduler.reader.definition.DagNodeDefinition;
-import org.gloryjie.scheduler.reader.definition.GraphDefinition;
+import org.gloryjie.scheduler.reader.config.JsonGraphReader;
+import org.gloryjie.scheduler.reader.config.YamlGraphReader;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -18,14 +15,14 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
-public class GraphDefinitionConfigReaderTest {
+public class ConfigGraphReaderTest {
 
 
 
 
     @ParameterizedTest
     @MethodSource("fileTypeAndReaderProvider")
-    public void readOneGraphTest(String fileType, GraphDefinitionConfigReader reader) throws Exception {
+    public void readOneGraphTest(String fileType, ConfigGraphReader reader) throws Exception {
         File file = new File("src/test/resources/graph." + fileType);
 
         String cnt = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
@@ -51,8 +48,8 @@ public class GraphDefinitionConfigReaderTest {
 
     static Stream<Arguments> fileTypeAndReaderProvider() {
         return Stream.of(
-                Arguments.of("json", new JsonGraphDefinitionReader()),
-                Arguments.of("yml", new YamlGraphDefinitionReader())
+                Arguments.of("json", new JsonGraphReader()),
+                Arguments.of("yml", new YamlGraphReader())
         );
     }
 

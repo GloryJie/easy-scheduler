@@ -21,18 +21,31 @@
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *  THE SOFTWARE.
  */
-package org.gloryjie.scheduler.reader.annotation;
+package org.gloryjie.scheduler.reader;
 
-
-import org.gloryjie.scheduler.reader.definition.GraphDefinition;
 
 import java.util.List;
 
 
-@FunctionalInterface
-public interface GraphDefinitionClassReader {
+public interface ConfigGraphReader {
 
-    GraphDefinition read(Class<?> clazz) throws Exception;
+    /**
+     * Reads the content and returns a list of graph definitions.
+     *
+     * @param content the content to be read
+     * @return a list of graph definitions
+     * @throws DagGraphReadException if an error occurs while reading the content
+     */
+    List<GraphDefinition> read(String content);
 
+
+    /**
+     * Checks if the given content is supported by the specified config type.
+     *
+     * @param configType The config type to check against.
+     * @param content The content to be checked.
+     * @return True if the content is supported by the config type, false otherwise.
+     */
+     boolean support(DagGraphConfigType configType, String content);
 
 }

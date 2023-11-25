@@ -5,8 +5,9 @@ import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.gloryjie.scheduler.api.*;
 import org.gloryjie.scheduler.core.ConcurrentDagEngine;
-import org.gloryjie.scheduler.reader.config.JsonGraphDefinitionReader;
-import org.gloryjie.scheduler.reader.config.YamlGraphDefinitionReader;
+import org.gloryjie.scheduler.reader.DagGraphConfigType;
+import org.gloryjie.scheduler.reader.config.JsonGraphReader;
+import org.gloryjie.scheduler.reader.config.YamlGraphReader;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -25,13 +26,13 @@ public class SpelGraphFactoryTest {
 
     @ParameterizedTest
     @MethodSource("fileTypeAndReaderProvider")
-    public void createSpelGraphTest(String fileType, SpelGraphFactory spelGraphFactory) throws Exception {
-        File file = new File("src/test/resources/graph." + fileType);
+    public void createSpelGraphTest(DagGraphConfigType configType, SpelGraphFactory spelGraphFactory) throws Exception {
+        File file = new File("src/test/resources/graph." + configType.name().toLowerCase());
         String cnt = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
 
         spelGraphFactory.registerMethodHandler(new UserService());
 
-        List<DagGraph> graphList = spelGraphFactory.createConfigGraph(cnt);
+        List<DagGraph> graphList = spelGraphFactory.createConfigGraph(configType, cnt);
 
         assertFalse(graphList.isEmpty());
         assertNotNull(graphList.get(0));
@@ -82,8 +83,8 @@ public class SpelGraphFactoryTest {
 
     static Stream<Arguments> fileTypeAndReaderProvider() {
         return Stream.of(
-                Arguments.of("json", new SpelGraphFactory(new JsonGraphDefinitionReader())),
-                Arguments.of("yml", new SpelGraphFactory(new YamlGraphDefinitionReader()))
+                Arguments.of(DagGraphConfigType.JSON, new SpelGraphFactory()),
+                Arguments.of(DagGraphConfigType.YAML, new SpelGraphFactory())
         );
     }
 
