@@ -28,15 +28,7 @@ public class ConcurrentDagEngine implements DagEngine {
 
 
     public ConcurrentDagEngine() {
-        this(new ExecutorSelector() {
-            private final ExecutorService executorService =
-                    Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
-            @Override
-            public ExecutorService select(String graphName) {
-                return executorService;
-            }
-        });
+        this(new SingleExcutorSelector(Runtime.getRuntime().availableProcessors()));
     }
 
     public ConcurrentDagEngine(ExecutorSelector executorSelector) {

@@ -13,6 +13,7 @@
         <module>easy-scheduler-reader</module>
         <module>easy-scheduler-spel</module>
         <module>easy-scheduler-dynamic</module>
+        <module>easy-scheduler-spring-boot-starter</module>
     </modules>
 
     <properties>
@@ -27,7 +28,8 @@
         <slf4j.version>1.7.30</slf4j.version>
         <jackson.version>2.11.3</jackson.version>
         <commons-io.version>2.15.0</commons-io.version>
-        <spring.version>5.3.1</spring.version>
+        <spring.version>5.3.31</spring.version>
+        <springboot-starter.version>2.7.18</springboot-starter.version>
     </properties>
 
 
@@ -114,6 +116,21 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <version>${springboot-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-configuration-processor</artifactId>
+                <version>${springboot-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-autoconfigure</artifactId>
+                <version>${springboot-starter.version}</version>
             </dependency>
 
 
