@@ -28,8 +28,8 @@
         <slf4j.version>1.7.30</slf4j.version>
         <jackson.version>2.11.3</jackson.version>
         <commons-io.version>2.15.0</commons-io.version>
-        <spring.version>5.3.31</spring.version>
-        <springboot-starter.version>2.7.18</springboot-starter.version>
+        <spring.version>5.3.4</spring.version>
+        <springboot-starter.version>2.4.3</springboot-starter.version>
     </properties>
 
 
