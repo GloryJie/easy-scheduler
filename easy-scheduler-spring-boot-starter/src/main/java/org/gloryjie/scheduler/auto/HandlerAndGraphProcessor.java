@@ -42,10 +42,13 @@ public class HandlerAndGraphProcessor implements SmartInitializingSingleton,
 
     @Override
     public void afterSingletonsInstantiated() {
+        if (CollectionUtils.isEmpty(dynamicDagEngineList)) {
+            return;
+        }
         // Register all method node handlers
         registerMethodNodeHandler();
 
-        // // Register all annotation graphs
+        // Register all annotation graphs
         registerAnnotationGraph();
 
     }
