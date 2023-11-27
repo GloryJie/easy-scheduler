@@ -11,8 +11,6 @@ import org.gloryjie.scheduler.reader.annotation.GraphClass;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -30,12 +28,17 @@ import java.util.Set;
 
 @Slf4j
 public class HandlerAndGraphProcessor implements SmartInitializingSingleton,
-        ApplicationContextAware, BeanFactoryPostProcessor {
+        ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
     private List<DynamicDagEngine> dynamicDagEngineList;
 
+    private EasySchedulerConfig easySchedulerConfig;
+
+    public HandlerAndGraphProcessor(EasySchedulerConfig easySchedulerConfig) {
+        this.easySchedulerConfig = easySchedulerConfig;
+    }
 
     @Override
     public void afterSingletonsInstantiated() {
@@ -48,7 +51,7 @@ public class HandlerAndGraphProcessor implements SmartInitializingSingleton,
     }
 
     private void registerAnnotationGraph() {
-        EasySchedulerConfig configProperties = applicationContext.getBean(EasySchedulerConfig.class);
+        EasySchedulerConfig configProperties = easySchedulerConfig;
 
         if (CollectionUtils.isNotEmpty(configProperties.getGraphClass())) {
             for (String className : configProperties.getGraphClass()) {
@@ -126,15 +129,10 @@ public class HandlerAndGraphProcessor implements SmartInitializingSingleton,
         }
     }
 
-
-    @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        Map<String, DynamicDagEngine> beansOfType = beanFactory.getBeansOfType(DynamicDagEngine.class, false, false);
-        this.dynamicDagEngineList = new ArrayList<>(beansOfType.values());
-    }
-
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+        Map<String, DynamicDagEngine> beansOfType = applicationContext.getBeansOfType(DynamicDagEngine.class, false, false);
+        this.dynamicDagEngineList = new ArrayList<>(beansOfType.values());
     }
 }

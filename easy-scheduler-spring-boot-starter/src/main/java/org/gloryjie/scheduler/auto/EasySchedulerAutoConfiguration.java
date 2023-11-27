@@ -20,11 +20,6 @@ import org.springframework.context.annotation.Bean;
 public class EasySchedulerAutoConfiguration {
 
     @Bean
-    public HandlerAndGraphProcessor handlerAndGraphProcessor() {
-        return new HandlerAndGraphProcessor();
-    }
-
-    @Bean
     @ConditionalOnMissingBean
     public DynamicDagEngine dynamicDagEngine(DagGraphFactory dagGraphFactory,
                                              DagEngine dagEngine) {
@@ -57,5 +52,10 @@ public class EasySchedulerAutoConfiguration {
         return new CompositeDagGraphReader();
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    public HandlerAndGraphProcessor handlerAndGraphProcessor(EasySchedulerConfig easySchedulerConfig) {
+        return new HandlerAndGraphProcessor(easySchedulerConfig);
+    }
 
 }

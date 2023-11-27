@@ -14,6 +14,10 @@ public class EasySchedulerConfig {
     private List<String> scanGraphPackage;
     private List<String> graphClass;
 
+
+    public void setScanGraphPackage(List<String> scanGraphPackage) {
+        this.scanGraphPackage = scanGraphPackage;
+    }
 }
 
 
