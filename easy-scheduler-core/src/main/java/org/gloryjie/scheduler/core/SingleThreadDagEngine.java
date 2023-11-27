@@ -2,9 +2,9 @@ package org.gloryjie.scheduler.core;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.gloryjie.scheduler.api.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.gloryjie.scheduler.api.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -93,12 +93,12 @@ public class SingleThreadDagEngine implements DagEngine {
             log.debug("Graph[{}] start", dagGraph.getGraphName());
 
             DagNode<?> node = dagGraph.getStartNode();
-            fireNode(node);
+            fireNode((DagNode<Object>) node);
             endTime = System.currentTimeMillis();
         }
 
 
-        private void fireNode(DagNode<?> node) {
+        private void fireNode(DagNode<Object> node) {
             checkTimeout();
 
             if (dagState != DagState.RUNNING) {
@@ -131,7 +131,7 @@ public class SingleThreadDagEngine implements DagEngine {
 
         }
 
-        private void fireNextNode(DagNode<?> curNode) {
+        private void fireNextNode(DagNode<Object> curNode) {
             List<DagNode<?>> successorNodes = dagGraph.getSuccessorNodes(curNode.getNodeName());
             if (curNode == dagGraph.getEndNode() || CollectionUtils.isEmpty(successorNodes)) {
                 dagDone(DagState.SUCCESS);
@@ -151,7 +151,7 @@ public class SingleThreadDagEngine implements DagEngine {
                 if (nodeState == NodeState.WAITING) {
                     int inDegree = nodeInDegreeInfo.get(nodeName);
                     if (inDegree == 0) {
-                        fireNode(successorNode);
+                        fireNode((DagNode<Object>) successorNode);
                     } else if (inDegree < 0) {
                         // safe check
                         throw new DagEngineException("inDegree could not be less than 0");
@@ -175,7 +175,7 @@ public class SingleThreadDagEngine implements DagEngine {
          * @param node the DAG node to execute
          * @return the result of executing the node.
          */
-        private NodeResult<?> executeNode(DagNode<?> node) {
+        private NodeResult<Object> executeNode(DagNode<Object> node) {
 
             NodeHandler<?> curHandler = node.getHandler();
             NodeResultImpl<Object> nodeResult = new NodeResultImpl<>(node.getNodeName());
@@ -185,7 +185,7 @@ public class SingleThreadDagEngine implements DagEngine {
                 boolean evaluateResult = curHandler.evaluate(dagContext);
                 log.debug("Graph[{}] node[{}] evaluate result: {}", dagGraph.getGraphName(), node.getNodeName(), evaluateResult);
                 if (evaluateResult) {
-                    Object result = curHandler.execute(dagContext);
+                    Object result = curHandler.execute(node, dagContext);
                     nodeResult.setResult(result);
                     nodeResult.setState(NodeState.SUCCEEDED);
                 }

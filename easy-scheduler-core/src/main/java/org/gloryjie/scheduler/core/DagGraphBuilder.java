@@ -1,17 +1,16 @@
 package org.gloryjie.scheduler.core;
 
-import org.gloryjie.scheduler.api.DagContext;
-import org.gloryjie.scheduler.api.DagGraph;
-import org.gloryjie.scheduler.api.DagNode;
 import com.google.common.collect.Sets;
 import com.google.common.graph.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.gloryjie.scheduler.api.DagContext;
+import org.gloryjie.scheduler.api.DagGraph;
+import org.gloryjie.scheduler.api.DagNode;
 import org.gloryjie.scheduler.api.NodeHandler;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("all")
@@ -149,7 +148,7 @@ public class DagGraphBuilder {
         if (initMethod != null) {
             startHandler = DefaultNodeHandler.builder()
                     .handlerName(DagGraph.START_NODE_NAME)
-                    .action(dagContext -> {
+                    .action((dagNode, dagContext) -> {
                         initMethod.accept(dagContext);
                         return null;
                     }).build();

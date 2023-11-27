@@ -20,5 +20,9 @@ public @interface GraphNode {
 
     String[] dependsOn() default {};
 
+    String paramConverter() default "";
+
+    String retConverter() default "";
+
 
 }

@@ -4,6 +4,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.gloryjie.scheduler.api.DagContext;
+import org.gloryjie.scheduler.api.DagNode;
 import org.gloryjie.scheduler.api.NodeHandler;
 import org.gloryjie.scheduler.core.DagEngineException;
 import org.gloryjie.scheduler.dynamic.annotation.ContextParam;
@@ -37,7 +38,7 @@ public class MethodNodeHandlerImpl implements NodeHandler<Object> {
 
 
     @Override
-    public Object execute(DagContext dagContext) {
+    public Object execute(DagNode dagNode, DagContext dagContext) {
 
         Object[] methodArg = null;
 

@@ -13,18 +13,17 @@ public interface NodeHandler<R> {
         return true;
     }
 
-    /**
-     * node execute method
-     */
-    R execute(DagContext dagContext);
+
+    R execute(DagNode<Object> dagNode, DagContext dagContext);
 
 
     /**
      * node execute timeout config
+     *
      * @return no timeout control return null
      */
-    default Long timeout(){
-      return null;
+    default Long timeout() {
+        return null;
     }
 
 

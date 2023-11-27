@@ -3,9 +3,11 @@ package org.gloryjie.scheduler.core;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.gloryjie.scheduler.api.DagContext;
+import org.gloryjie.scheduler.api.DagNode;
 import org.gloryjie.scheduler.api.NodeHandler;
 
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -17,23 +19,16 @@ public class DefaultNodeHandler<T> implements NodeHandler<T> {
 
     private final Predicate<DagContext> when;
 
-    private final Function<DagContext, T> action;
+    private BiFunction<DagNode, DagContext, T> biFunction;
 
     private final Long timeout;
 
-    public DefaultNodeHandler(String name, Function<DagContext, T> action) {
-        this(name, null, action, null);
-    }
 
-    public DefaultNodeHandler(String name, Predicate<DagContext> when, Function<DagContext, T> action) {
-        this(name, when, action, null);
-    }
-
-    public DefaultNodeHandler(String name, Predicate<DagContext> when, Function<DagContext, T> action, Long timeout) {
+    public DefaultNodeHandler(String name, Predicate<DagContext> when, BiFunction<DagNode, DagContext, T> biFunction, Long timeout) {
         Objects.requireNonNull(name, "NodeHandler name can not be null");
         this.name = name;
         this.when = when;
-        this.action = action;
+        this.biFunction = biFunction;
         this.timeout = timeout;
     }
 
@@ -47,10 +42,8 @@ public class DefaultNodeHandler<T> implements NodeHandler<T> {
         return when == null || when.test(dagContext);
     }
 
-
-    @Override
-    public T execute(DagContext dagContext) {
-        return action == null ? null : action.apply(dagContext);
+    public T execute(DagNode dagNode, DagContext dagContext) {
+        return biFunction.apply(dagNode, dagContext);
     }
 
     @Override
@@ -67,7 +60,8 @@ public class DefaultNodeHandler<T> implements NodeHandler<T> {
 
         private String handlerName;
         private Predicate<DagContext> when;
-        private Function<DagContext, T> action;
+        private BiFunction<DagNode, DagContext, T> biFunction;
+
         private Long timeout;
 
         Builder() {
@@ -84,7 +78,12 @@ public class DefaultNodeHandler<T> implements NodeHandler<T> {
         }
 
         public Builder<T> action(Function<DagContext, T> action) {
-            this.action = action;
+            this.biFunction = (dagNode, dagContext) -> action.apply(dagContext);
+            return this;
+        }
+
+        public Builder<T> action(BiFunction<DagNode, DagContext, T> action) {
+            this.biFunction = action;
             return this;
         }
 
@@ -94,12 +93,12 @@ public class DefaultNodeHandler<T> implements NodeHandler<T> {
         }
 
         public NodeHandler<T> build() {
-            return new DefaultNodeHandler<>(this.handlerName, this.when, this.action, this.timeout);
+            return new DefaultNodeHandler<>(this.handlerName, this.when, this.biFunction, this.timeout);
         }
 
         public String toString() {
             return "DefaultNodeHandler.Builder(handlerName=" + this.handlerName
-                    + ", when=" + this.when + ", action=" + this.action + ", timeout=" + this.timeout + ")";
+                    + ", when=" + this.when + ", action=" + this.biFunction + ", timeout=" + this.timeout + ")";
         }
     }
 

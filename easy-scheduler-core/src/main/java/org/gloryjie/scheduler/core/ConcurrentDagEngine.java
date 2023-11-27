@@ -284,7 +284,8 @@ public class ConcurrentDagEngine implements DagEngine {
         }
 
 
-        public void executeNode(DagNode<?> node, NodeResultImpl<Object> nodeResult) {
+        @SuppressWarnings("all")
+        public void executeNode(DagNode node, NodeResultImpl<Object> nodeResult) {
 
             nodeResult.setStartTime(System.currentTimeMillis());
             nodeResult.setState(NodeState.RUNNING);
@@ -298,7 +299,7 @@ public class ConcurrentDagEngine implements DagEngine {
                 boolean evaluateResult = handler.evaluate(dagContext);
 
                 if (evaluateResult) {
-                    Object result = handler.execute(dagContext);
+                    Object result = handler.execute(node, dagContext);
                     nodeResult.setResult(result);
                 }
 

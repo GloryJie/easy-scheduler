@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -126,7 +126,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
         Predicate<DagContext> predicate = createWhen(originalNodeHandler, nodeDefinition.getConditions());
 
         // Create the action for the handler
-        Function<DagContext, Object> action = createAction(originalNodeHandler, nodeDefinition);
+        BiFunction<DagNode, DagContext, Object> action = createAction(originalNodeHandler, nodeDefinition);
 
         // create new handler
         NodeHandler<Object> handler = DefaultNodeHandler.builder()
@@ -176,8 +176,8 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
      * @param nodeDefinition The node definition
      * @return The function that executes the handler and expression
      */
-    private Function<DagContext, Object> createAction(NodeHandler<Object> handler,
-                                                      DagNodeDefinition nodeDefinition) {
+    private BiFunction<DagNode, DagContext, Object> createAction(NodeHandler<Object> handler,
+                                                                 DagNodeDefinition nodeDefinition) {
         List<String> actions = nodeDefinition.getActions();
 
         // Create a consumer for each action and combine them into a single consumer
@@ -192,8 +192,9 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
 
         // Create a function that execute the handler and expression
         final String fieldName = nodeDefinition.getRetFieldName();
-        return dagContext -> {
-            Object result = handler != null ? handler.execute(dagContext) : null;
+        return (dagNode, dagContext) -> {
+
+            Object result = handler != null ? handler.execute(dagNode, dagContext) : null;
 
             Object context = dagContext.getContext();
             // If the result is not null, set the field to context

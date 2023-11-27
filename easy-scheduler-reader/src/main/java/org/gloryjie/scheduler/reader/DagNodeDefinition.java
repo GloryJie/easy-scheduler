@@ -24,4 +24,8 @@ public class DagNodeDefinition {
 
     private List<String> actions;
 
+    private String paramConverter;
+
+    private String retConverter;
+
 }

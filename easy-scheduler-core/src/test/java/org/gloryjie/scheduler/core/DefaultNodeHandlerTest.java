@@ -24,7 +24,7 @@ public class DefaultNodeHandlerTest {
         handler.evaluate(dagContext);
 
         try {
-            handler.execute(dagContext);
+            handler.execute(null, dagContext);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -48,7 +48,7 @@ public class DefaultNodeHandlerTest {
 
         Exception exception = null;
         try {
-            handler.execute(dagContext);
+            handler.execute(null, dagContext);
         } catch (Exception e) {
             exception = e;
 
