@@ -21,7 +21,7 @@ public class DefaultNodeHandlerTest {
 
         DagContext dagContext = new MapDagContext(null);
 
-        handler.evaluate(dagContext);
+        handler.evaluate(null, dagContext);
 
         try {
             handler.execute(null, dagContext);
@@ -44,7 +44,7 @@ public class DefaultNodeHandlerTest {
 
         DagContext dagContext = new MapDagContext(null);
 
-        handler.evaluate(dagContext);
+        handler.evaluate(null, dagContext);
 
         Exception exception = null;
         try {

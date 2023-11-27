@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -123,7 +124,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
                 .map(NodeHandler::handlerName).orElse(ANONYMOUS_HANDLER);
 
         // Create the predicate for the handler
-        Predicate<DagContext> predicate = createWhen(originalNodeHandler, nodeDefinition.getConditions());
+        BiPredicate<DagNode, DagContext> predicate = createWhen(originalNodeHandler, nodeDefinition.getConditions());
 
         // Create the action for the handler
         BiFunction<DagNode, DagContext, Object> action = createAction(originalNodeHandler, nodeDefinition);
@@ -153,20 +154,27 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
      * @param conditions The list of conditions
      * @return The created predicate
      */
-    private Predicate<DagContext> createWhen(NodeHandler<Object> handler, List<String> conditions) {
+    private BiPredicate<DagNode, DagContext> createWhen(NodeHandler<Object> handler, List<String> conditions) {
         // Create initial predicate based on the handler
-        Predicate<DagContext> predicate = Optional.ofNullable(handler)
-                .map(item -> (Predicate<DagContext>) item::evaluate)
-                .orElse(null);
-
-        // Combine the initial predicate with the conditions, if any
-        if (CollectionUtils.isNotEmpty(conditions)) {
-            predicate = conditions.stream()
-                    .map(this::createCondition)
-                    .reduce(predicate, (a, b) -> a != null ? a.and(b) : b);
+        BiPredicate<DagNode, DagContext> predicate = null;
+        if (handler != null) {
+            predicate = (dagNode, dagContext) -> handler.evaluate(dagNode, dagContext);
         }
 
-        return predicate;
+        if (CollectionUtils.isEmpty(conditions)) {
+            return predicate;
+        }
+
+        // Combine the initial predicate with the conditions, if any
+        Predicate<DagContext> condition = null;
+        for (String conditionStr : conditions) {
+            Predicate<DagContext> andPredicate = this.createCondition(conditionStr);
+            condition = condition == null ? andPredicate : condition.and(andPredicate);
+        }
+        Predicate<DagContext> finalCondition = condition;
+        final BiPredicate<DagNode, DagContext> mergePredicate = (dagNode, dagContext) -> finalCondition.test(dagContext);
+
+        return predicate == null ? mergePredicate : predicate.and(mergePredicate);
     }
 
     /**

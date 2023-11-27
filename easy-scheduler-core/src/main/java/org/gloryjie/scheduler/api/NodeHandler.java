@@ -6,10 +6,7 @@ public interface NodeHandler<R> {
     String handlerName();
 
 
-    /**
-     * evaluate handler could execute
-     */
-    default boolean evaluate(DagContext dagContext) {
+    default boolean evaluate(DagNode<Object> dagNode, DagContext dagContext) {
         return true;
     }
 

@@ -296,7 +296,7 @@ public class ConcurrentDagEngine implements DagEngine {
                 return;
             }
             try {
-                boolean evaluateResult = handler.evaluate(dagContext);
+                boolean evaluateResult = handler.evaluate(node, dagContext);
 
                 if (evaluateResult) {
                     Object result = handler.execute(node, dagContext);

@@ -182,7 +182,7 @@ public class SingleThreadDagEngine implements DagEngine {
             nodeResult.setStartTime(System.currentTimeMillis());
 
             try {
-                boolean evaluateResult = curHandler.evaluate(dagContext);
+                boolean evaluateResult = curHandler.evaluate(node, dagContext);
                 log.debug("Graph[{}] node[{}] evaluate result: {}", dagGraph.getGraphName(), node.getNodeName(), evaluateResult);
                 if (evaluateResult) {
                     Object result = curHandler.execute(node, dagContext);
