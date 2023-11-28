@@ -1,27 +1,26 @@
 package org.gloryjie.scheduler.core;
 
 import org.gloryjie.scheduler.api.*;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DagEngineTest {
 
-    private DagEngine dagEngine = new ConcurrentDagEngine();
-
-
-
-
     /**
      * test one node succeeded
      */
-    @Test
-    public void fireSingleNodeGraphSucceededTest() {
+    @ParameterizedTest
+    @MethodSource("dagEngineProvider")
+    public void fireSingleNodeGraphSucceededTest(DagEngine dagEngine) {
 
         AtomicInteger testExecute = new AtomicInteger(0);
         DagGraph dagGraph = buildOneNodeGraph((context -> {
@@ -38,8 +37,9 @@ public class DagEngineTest {
         assertSame(1, testExecute.get());
     }
 
-    @Test
-    public void fireSingleNodeGraphFailedTest() {
+    @ParameterizedTest
+    @MethodSource("dagEngineProvider")
+    public void fireSingleNodeGraphFailedTest(DagEngine dagEngine) {
         DagGraph dagGraph = buildOneNodeGraph((context -> {
             throw new RuntimeException("node execute error");
         }));
@@ -53,8 +53,9 @@ public class DagEngineTest {
     }
 
 
-    @Test
-    public void fireSingleNodeGraphTimeoutTest() {
+    @ParameterizedTest
+    @MethodSource("dagEngineProvider")
+    public void fireSingleNodeGraphTimeoutTest(DagEngine dagEngine) {
         DagGraph dagGraph = buildOneNodeGraph((context -> {
             try {
                 TimeUnit.SECONDS.sleep(1);
@@ -69,8 +70,6 @@ public class DagEngineTest {
         assertTrue(fireResult.isDone());
         assertEquals(DagState.TIMEOUT, fireResult.getState());
         assertInstanceOf(TimeoutException.class, fireResult.getThrowable());
-
-        //not check node state, could be timeout or running state
     }
 
     @SuppressWarnings({"all"})
@@ -89,5 +88,13 @@ public class DagEngineTest {
                 .build();
 
         return dagGraph;
+    }
+
+
+    static Stream<Arguments> dagEngineProvider() {
+        return Stream.of(
+                Arguments.of(new ConcurrentDagEngine()),
+                Arguments.of(new SingleThreadDagEngine())
+        );
     }
 }
