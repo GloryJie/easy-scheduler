@@ -10,7 +10,7 @@ public enum DagState {
     /**
      * All node execute success
      */
-    SUCCESS,
+    SUCCEED,
     /**
      * at least one node execute failed
      */
@@ -31,7 +31,7 @@ public enum DagState {
      * @return true if the DagState is a done state, false otherwise
      */
     public static boolean isDoneState(DagState dagState) {
-        return dagState == DagState.SUCCESS
+        return dagState == DagState.SUCCEED
                 || dagState == DagState.FAILED
                 || dagState == DagState.TIMEOUT
                 || dagState == DagState.INTERRUPTED;

@@ -32,7 +32,7 @@ public class DagEngineTest {
         DagResult fireResult = dagEngine.fire(dagGraph, "testContext");
 
         assertTrue(fireResult.isDone());
-        assertSame(DagState.SUCCESS, fireResult.getState());
+        assertSame(DagState.SUCCEED, fireResult.getState());
         assertNull(fireResult.getThrowable());
         assertSame(NodeState.SUCCEEDED, fireResult.getNodeStateMap().get("A"));
         assertSame(1, testExecute.get());

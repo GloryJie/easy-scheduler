@@ -61,7 +61,7 @@ public class SpelGraphFactoryTest {
         DagResult dagResult = dagEngine.fire(dagGraph, userInfoContext);
 
         assertTrue(dagResult.isDone());
-        assertEquals(DagState.SUCCESS, dagResult.getState());
+        assertEquals(DagState.SUCCEED, dagResult.getState());
 
         // assert result
         assertEquals("Jack", userInfoContext.getUserInfo().getName());

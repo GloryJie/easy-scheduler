@@ -134,7 +134,7 @@ public class SingleThreadDagEngine implements DagEngine {
         private void fireNextNode(DagNode<Object> curNode) {
             List<DagNode<?>> successorNodes = dagGraph.getSuccessorNodes(curNode.getNodeName());
             if (curNode == dagGraph.getEndNode() || CollectionUtils.isEmpty(successorNodes)) {
-                dagDone(DagState.SUCCESS);
+                dagDone(DagState.SUCCEED);
             } else {
                 decrementSuccessorInDegree(successorNodes);
                 checkAndFireSuccessorNodes(successorNodes);

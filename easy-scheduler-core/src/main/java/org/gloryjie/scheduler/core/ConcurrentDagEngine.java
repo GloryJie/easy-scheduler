@@ -179,7 +179,7 @@ public class ConcurrentDagEngine implements DagEngine {
         private void fireNextNode(DagNode<?> curNode) {
             List<DagNode<?>> successorNodes = dagGraph.getSuccessorNodes(curNode.getNodeName());
             if (curNode == dagGraph.getEndNode() || CollectionUtils.isEmpty(successorNodes)) {
-                dagDone(DagState.SUCCESS, null);
+                dagDone(DagState.SUCCEED, null);
             } else {
                 decrementSuccessorInDegree(successorNodes);
                 checkAndFireSuccessorNodes(successorNodes);
@@ -231,7 +231,7 @@ public class ConcurrentDagEngine implements DagEngine {
                 // Asynchronously execute the node
                 nodeFuture =
                         CompletableFuture.supplyAsync(() -> {
-                            // check state
+                            // // Check the DAG and node state before executing
                             if (dagStateRef.get() != DagState.RUNNING
                                     || nodeStateMap.get(node.getNodeName()) != NodeState.WAITING) {
                                 return null;
@@ -247,9 +247,7 @@ public class ConcurrentDagEngine implements DagEngine {
             }
 
             nodeFuture.thenAccept(curResult -> {
-                        // if curResult is null, just return
-                        // if dag state is not running, just return
-                        // if node state is not running (timeout or other situation), just return
+                        // Check the DAG and node state before executing
                         if (curResult == null
                                 || dagStateRef.get() != DagState.RUNNING
                                 || nodeStateMap.get(nodeResult.getNodeName()) != NodeState.RUNNING) {

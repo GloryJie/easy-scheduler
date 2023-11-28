@@ -57,9 +57,9 @@ public class AbstractGraphFactoryTest {
 
         // assert state
         assertTrue(dagResult.isDone());
-        assertEquals(DagState.SUCCESS, dagResult.getState());
+        assertEquals(DagState.SUCCEED, dagResult.getState());
         assertTrue(dagResult.isDone());
-        assertSame(DagState.SUCCESS, dagResult.getState());
+        assertSame(DagState.SUCCEED, dagResult.getState());
         assertNull(dagResult.getThrowable());
         assertSame(NodeState.SUCCEEDED, dagResult.getNodeStateMap().get("userInfo"));
         assertSame(NodeState.SUCCEEDED, dagResult.getNodeStateMap().get("courseList"));
