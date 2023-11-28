@@ -6,8 +6,7 @@ import lombok.Getter;
 public enum DependencyType {
 
     STRONG(1),
-    SOFT(2),
-    WEAK(3);
+    SOFT(2);
 
     final int code;
 

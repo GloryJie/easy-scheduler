@@ -186,12 +186,30 @@ public class ConcurrentDagEngine implements DagEngine {
             }
         }
 
-        private void fireNextNode(DagNode<?> curNode) {
+        private void fireNextNode(DagNode<?> curNode, NodeResultImpl<Object> curNodeResult) {
+            if (dagStateRef.get() != DagState.RUNNING) {
+                return;
+            }
+
+            // Mark the entire graph as failed if the node execution was not successful and there are strong dependencies
+            if (curNodeResult.getState() != NodeState.SUCCEEDED) {
+                Map<String, DependencyType> successorNodeTypes =
+                        dagGraph.getSuccessorNodeTypes(curNode.getNodeName());
+                boolean hadStrongDepend = successorNodeTypes.values().stream()
+                        .anyMatch(type -> type == DependencyType.STRONG);
+                // If there are strong dependencies, mark the DAG as failed
+                if (hadStrongDepend) {
+                    dagDone(DagState.FAILED, curNodeResult.getThrowable());
+                    return;
+                }
+            }
+
             List<DagNode<?>> successorNodes = dagGraph.getSuccessorNodes(curNode.getNodeName());
             // If the current node is the end node or there are no successor nodes, mark the DAG as succeeded
             if (curNode == dagGraph.getEndNode() || CollectionUtils.isEmpty(successorNodes)) {
                 dagDone(DagState.SUCCEED, null);
             } else {
+
                 // Decrement the in-degree of the successor nodes
                 decrementSuccessorInDegree(successorNodes);
 
@@ -271,7 +289,8 @@ public class ConcurrentDagEngine implements DagEngine {
                         handleNodeExecuteResult(node, curResult);
 
                         // cur node execute succeeded, fire successor nodes
-                        fireNextNode(node);
+                        fireNextNode(node, curResult);
+
                     })
                     .exceptionally(e -> {
                         // Throw a DagEngineException if an unknown exception occurs during execution
@@ -288,11 +307,6 @@ public class ConcurrentDagEngine implements DagEngine {
 
             dagContext.putNodeResult(nodeResult.getNodeName(), nodeResult);
             nodeStateMap.put(node.getNodeName(), nodeResult.getState());
-
-            // // Mark the entire graph as failed if the node execution was not successful
-            if (nodeResult.getState() != NodeState.SUCCEEDED) {
-                dagDone(DagState.FAILED, nodeResult.getThrowable());
-            }
         }
 
 

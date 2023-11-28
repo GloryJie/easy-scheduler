@@ -65,6 +65,7 @@ public interface DagGraph {
 
     DependencyType getNodeDepencencyType(String src, String end);
 
+    Map<String, DependencyType> getSuccessorNodeTypes(String nodeName);
 
     default Long timeout() {
         return null;

@@ -114,17 +114,14 @@ public class SingleThreadDagEngine implements DagEngine {
                 nodeStateMap.put(nodeName, nodeResult.getState());
                 dagContext.putNodeResult(nodeName, nodeResult);
 
-                if (nodeResult.getState() != NodeState.SUCCEEDED) {
-                    dagDone(DagState.FAILED);
-                }
                 log.debug("Graph[{}] node[{}] execute state: {} result: {}", dagGraph.getGraphName(),
                         nodeName, nodeResult.getState(), nodeResult.getResult());
 
             } catch (Exception e) {
                 // Throw a DagEngineException if an unknown exception occurs during execution
-                dagDone(DagState.FAILED);
                 log.error("Graph[{}] node[{}] execute encount unknown exception ", dagGraph.getGraphName(), node.getNodeName(), e);
-                throw new DagEngineException("Unknown exception happened: " + e.getMessage(), e.getCause());
+                DagEngineException dagEngineException = new DagEngineException("Unknown exception happened: " + e.getMessage(), e);
+                dagDone(DagState.FAILED, dagEngineException);
             } finally {
                 fireNextNode(node);
             }
@@ -132,9 +129,26 @@ public class SingleThreadDagEngine implements DagEngine {
         }
 
         private void fireNextNode(DagNode<Object> curNode) {
+            if (dagState != DagState.RUNNING) {
+                return;
+            }
+
+            NodeResult<?> curNodeResult = dagContext.getNodeResult(curNode.getNodeName());
+            if (curNodeResult.getState() != NodeState.SUCCEEDED) {
+                Map<String, DependencyType> successorNodeTypes =
+                        dagGraph.getSuccessorNodeTypes(curNode.getNodeName());
+                boolean hadStrongDepend = successorNodeTypes.values().stream()
+                        .anyMatch(type -> type == DependencyType.STRONG);
+                // If there are strong dependencies, mark the DAG as failed
+                if (hadStrongDepend) {
+                    dagDone(DagState.FAILED, curNodeResult.getThrowable());
+                    return;
+                }
+            }
+
             List<DagNode<?>> successorNodes = dagGraph.getSuccessorNodes(curNode.getNodeName());
             if (curNode == dagGraph.getEndNode() || CollectionUtils.isEmpty(successorNodes)) {
-                dagDone(DagState.SUCCEED);
+                dagDone(DagState.SUCCEED, null);
             } else {
                 decrementSuccessorInDegree(successorNodes);
                 checkAndFireSuccessorNodes(successorNodes);
@@ -202,13 +216,14 @@ public class SingleThreadDagEngine implements DagEngine {
         private void checkTimeout() {
             long now = System.currentTimeMillis();
             if (timeout != null && timeout > 0 && (timeout < now - startTime)) {
-                dagDone(DagState.TIMEOUT);
-                throwable = new TimeoutException(String.format("Dag[graphName=%s] timeout expected: %s ms, cost: %s ms",
+                TimeoutException timeoutException = new TimeoutException(String.format("Dag[graphName=%s] timeout expected: %s ms, cost: %s ms",
                         dagGraph.getGraphName(), timeout, now - startTime));
+                dagDone(DagState.TIMEOUT, timeoutException);
             }
         }
 
-        private void dagDone(DagState state) {
+        private void dagDone(DagState state, Throwable throwable) {
+            this.throwable = throwable;
             endTime = System.currentTimeMillis();
             dagState = state;
         }

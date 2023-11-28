@@ -90,6 +90,17 @@ public class DefaultDagGraph implements DagGraph {
     }
 
     @Override
+    public Map<String, DependencyType> getSuccessorNodeTypes(String nodeName) {
+        return graph.successors(nodeName).stream()
+                .collect(Collectors.toMap(Function.identity(),
+                        successorNodeName -> {
+                            Integer weight = graph.edgeValueOrDefault(nodeName,
+                                    successorNodeName, DependencyType.STRONG.getCode());
+                            return DependencyType.codeOf(weight);
+                        }));
+    }
+
+    @Override
     public Object getAttribute(String key) {
         Objects.requireNonNull(key, "dag graph attribute key must not be null");
         return attributeMap.get(key);
