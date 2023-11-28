@@ -46,6 +46,16 @@ public class ConcurrentDagEngine implements DagEngine {
     }
 
 
+    /**
+     * Wraps the given CompletableFuture with a timeout.
+     *
+     * @param dagNode    the DagNode associated with the CompletableFuture
+     * @param nodeResult the result of the DagNode
+     * @param future     the CompletableFuture to wrap with a timeout
+     * @return a CompletableFuture that completes with the result of the original CompletableFuture,
+     * or completes with nodeResult that state is TIMEOUT and throwable is TimeoutException
+     * if the original does not complete within the specified timeout period
+     */
     protected CompletableFuture<NodeResultImpl<Object>> wrapNodeFutureWithTimeout(
             DagNode<?> dagNode,
             NodeResultImpl<Object> nodeResult,
@@ -157,31 +167,34 @@ public class ConcurrentDagEngine implements DagEngine {
 
             fireNode(dagGraph.getStartNode());
 
-            // wait
+            // Wait for the DAG execution to complete
             try {
-                if (timeout == null) {
+                if (timeout == null || timeout <= 0) {
                     countDownLatch.await();
                 } else {
                     boolean awaitResult = countDownLatch.await(timeout, TimeUnit.MILLISECONDS);
                     if (!awaitResult) {
-                        log.warn("Graph[{}] timeout", dagGraph.getGraphName());
                         String msg = String.format("Graph[%s] not completed in %s ms",
                                 dagGraph.getGraphName(), timeout);
+                        log.debug(msg);
                         dagDone(DagState.TIMEOUT, new TimeoutException(msg));
                     }
                 }
             } catch (InterruptedException e) {
-                log.warn("Graph[{}] interrupted", dagGraph.getGraphName());
+                log.debug("Graph[{}] interrupted", dagGraph.getGraphName());
                 dagDone(DagState.INTERRUPTED, e);
             }
         }
 
         private void fireNextNode(DagNode<?> curNode) {
             List<DagNode<?>> successorNodes = dagGraph.getSuccessorNodes(curNode.getNodeName());
+            // If the current node is the end node or there are no successor nodes, mark the DAG as succeeded
             if (curNode == dagGraph.getEndNode() || CollectionUtils.isEmpty(successorNodes)) {
                 dagDone(DagState.SUCCEED, null);
             } else {
+                // Decrement the in-degree of the successor nodes
                 decrementSuccessorInDegree(successorNodes);
+
                 checkAndFireSuccessorNodes(successorNodes);
             }
         }
@@ -196,9 +209,11 @@ public class ConcurrentDagEngine implements DagEngine {
             if (dagStateRef.get() != DagState.RUNNING) {
                 return;
             }
+
             for (DagNode<?> successorNode : successorNodes) {
                 String nodeName = successorNode.getNodeName();
                 NodeState nodeState = nodeStateMap.get(nodeName);
+                // Check if the node is in the waiting state and the in-degree is 0
                 if (nodeState == NodeState.WAITING) {
                     int inDegree = nodeInDegreeInfo.get(nodeName).get();
                     if (inDegree == 0) {
@@ -274,10 +289,9 @@ public class ConcurrentDagEngine implements DagEngine {
             dagContext.putNodeResult(nodeResult.getNodeName(), nodeResult);
             nodeStateMap.put(node.getNodeName(), nodeResult.getState());
 
-            // not succeeded
+            // // Mark the entire graph as failed if the node execution was not successful
             if (nodeResult.getState() != NodeState.SUCCEEDED) {
                 dagDone(DagState.FAILED, nodeResult.getThrowable());
-                return;
             }
         }
 

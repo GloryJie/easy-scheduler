@@ -72,7 +72,7 @@ public class SingleThreadDagEngine implements DagEngine {
         private final Map<String, Integer> nodeInDegreeInfo;
         private final Long timeout;
         private DagState dagState = DagState.WAITING;
-        Map<String, NodeState> nodeStateMap;
+        private final Map<String, NodeState> nodeStateMap;
         private Throwable throwable;
         private long startTime;
         private long endTime;
