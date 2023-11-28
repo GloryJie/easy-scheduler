@@ -28,7 +28,11 @@ public interface DagNode<R> {
      *
      * @param nodeName the name of the node to add the dependency to
      */
-    void addDependency(String nodeName);
+    default void addDependency(String nodeName) {
+        addDependency(DependencyType.STRONG, nodeName);
+    }
+
+    void addDependency(DependencyType dependencyType, String nodeName);
 
     /**
      * Removes a dependency for the given nodeName.

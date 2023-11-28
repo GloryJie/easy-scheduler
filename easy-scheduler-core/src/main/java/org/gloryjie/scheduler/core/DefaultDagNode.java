@@ -2,6 +2,7 @@ package org.gloryjie.scheduler.core;
 
 import lombok.ToString;
 import org.gloryjie.scheduler.api.DagNode;
+import org.gloryjie.scheduler.api.DependencyType;
 import org.gloryjie.scheduler.api.NodeHandler;
 
 import java.util.*;
@@ -13,37 +14,20 @@ public class DefaultDagNode<T> implements DagNode<T> {
     private final String nodeName;
     private final NodeHandler<T> handler;
 
-    private final Set<String> dependencies;
+    private final Map<String, DependencyType> dependencyMap = new ConcurrentHashMap<>();
 
     private Long timeout;
 
     private final ConcurrentHashMap<String, Object> attributeMap = new ConcurrentHashMap<>();
 
-    public DefaultDagNode(String nodeName) {
-        this(nodeName, null);
-    }
 
-    public DefaultDagNode(NodeHandler<T> handler) {
-        this(Objects.requireNonNull(handler, "NodeHandler must not be null").handlerName(), handler);
-    }
-
-    public DefaultDagNode(String nodeName, NodeHandler<T> handler) {
-        this(nodeName, handler, null);
-    }
-
-    public DefaultDagNode(String nodeName, NodeHandler<T> handler, Set<String> dependencies, Long timeout) {
-        this(nodeName, handler, dependencies);
-        this.timeout = timeout;
-    }
-
-    public DefaultDagNode(String nodeName, NodeHandler<T> handler, Set<String> dependencies) {
+    public DefaultDagNode(String nodeName, NodeHandler<T> handler, Map<String, DependencyType> dependencyMap, Long timeout) {
         Objects.requireNonNull(nodeName, "node name must not be null");
         this.nodeName = nodeName;
         this.handler = handler;
-        if (dependencies != null) {
-            this.dependencies = new HashSet<>(dependencies);
-        } else {
-            this.dependencies = new HashSet<>();
+        this.timeout = timeout;
+        if (dependencyMap != null) {
+            this.dependencyMap.putAll(dependencyMap);
         }
     }
 
@@ -59,21 +43,22 @@ public class DefaultDagNode<T> implements DagNode<T> {
     }
 
     @Override
-    public void addDependency(String nodeName) {
+    public void addDependency(DependencyType dependencyType, String nodeName) {
+        Objects.requireNonNull(dependencyType, "depend type must not be null");
         Objects.requireNonNull(nodeName, "node name must not be null");
-        this.dependencies.add(nodeName);
+        this.dependencyMap.put(nodeName, dependencyType);
     }
 
     @Override
     public void removeDependency(String nodeName) {
         Objects.requireNonNull(nodeName, "node name must not be null");
-        this.dependencies.remove(nodeName);
+        this.dependencyMap.remove(nodeName);
     }
 
     @Override
     public Set<String> dependNodeNames() {
         // copy a new set to avoid modification
-        return new HashSet<>(dependencies);
+        return new HashSet<>(dependencyMap.keySet());
     }
 
     @Override
@@ -104,7 +89,7 @@ public class DefaultDagNode<T> implements DagNode<T> {
 
         private String nodeName;
         private NodeHandler<T> handler;
-        private final Set<String> denpencies = new HashSet<>();
+        private final Map<String, DependencyType> dependTypeMap = new HashMap<>();
 
         private final Map<String, Object> attributes = new HashMap<>();
         private Long timeout;
@@ -124,7 +109,16 @@ public class DefaultDagNode<T> implements DagNode<T> {
         }
 
         public Builder<T> dependOn(String... nodeNames) {
-            this.denpencies.addAll(Arrays.asList(nodeNames));
+            for (String name : nodeNames) {
+                this.dependTypeMap.put(name, DependencyType.STRONG);
+            }
+            return this;
+        }
+
+        public Builder<T> dependOn(DependencyType dependencyType, String... nodeNames) {
+            for (String name : nodeNames) {
+                this.dependTypeMap.put(name, dependencyType);
+            }
             return this;
         }
 
@@ -139,7 +133,7 @@ public class DefaultDagNode<T> implements DagNode<T> {
         }
 
         public DagNode<T> build() {
-            DefaultDagNode<T> dagNode = new DefaultDagNode<>(nodeName, handler, denpencies, timeout);
+            DefaultDagNode<T> dagNode = new DefaultDagNode<>(nodeName, handler, dependTypeMap, timeout);
             this.attributes.forEach(dagNode::setAttribute);
             return dagNode;
         }
