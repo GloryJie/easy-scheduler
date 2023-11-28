@@ -69,7 +69,8 @@ public class GraphClassAnnotationGraphReader implements AnnotationGraphReader {
             nodeDefinition.setHandler(graphNode.handler());
             nodeDefinition.setConditions(arrayToStrList(graphNode.conditions()));
             nodeDefinition.setActions(arrayToStrList(graphNode.actions()));
-
+            nodeDefinition.setParamConverter(graphNode.paramConverter());
+            nodeDefinition.setRetConverter(graphNode.retConverter());
 
             Collection<String> fieldSet = CollectionUtils.retainAll(arrayToStrList(graphNode.dependsOn()), hadAnnotationFieldNameSet);
             nodeDefinition.setDependsOn(new HashSet<>(fieldSet));

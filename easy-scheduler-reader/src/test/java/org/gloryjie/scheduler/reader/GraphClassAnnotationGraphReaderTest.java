@@ -3,7 +3,7 @@ package org.gloryjie.scheduler.reader;
 import org.gloryjie.scheduler.reader.annotation.GraphClassAnnotationGraphReader;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GraphClassAnnotationGraphReaderTest {
 
@@ -25,6 +25,8 @@ public class GraphClassAnnotationGraphReaderTest {
         DagNodeDefinition userInfoNode = graphDefinition.getNodes().get(0);
         assertEquals("userInfo", userInfoNode.getRetFieldName());
         assertEquals("getUserSimpleInfoHandler", userInfoNode.getHandler());
+        assertEquals("getUserSimpleInfoHandlerParamConverter", userInfoNode.getParamConverter());
+        assertEquals("getUserSimpleInfoHandlerRetConverter", userInfoNode.getRetConverter());
 
 
         DagNodeDefinition courseInfoNode = graphDefinition.getNodes().get(1);

@@ -20,6 +20,10 @@ public @interface GraphNode {
 
     String[] dependsOn() default {};
 
+
+    /**
+     * converter only use for MethodNodeHandler
+     */
     String paramConverter() default "";
 
     String retConverter() default "";

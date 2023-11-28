@@ -15,7 +15,9 @@ public class UserInfoContext {
 
     private Integer uid;
 
-    @GraphNode(handler = "getUserSimpleInfoHandler", dependsOn = "uid")
+    @GraphNode(handler = "getUserSimpleInfoHandler", dependsOn = "uid",
+            paramConverter = "getUserSimpleInfoHandlerParamConverter",
+            retConverter = "getUserSimpleInfoHandlerRetConverter")
     private UserInfo userInfo;
 
 
@@ -24,6 +26,26 @@ public class UserInfoContext {
 
     @GraphNode(handler = "getUserCourseScoreHandler", dependsOn = "courseList")
     private List<Course> courseScoreList;
+
+
+    public void init() {
+        System.out.println("init method invoke");
+    }
+
+    public void end() {
+        System.out.println("end method invoke");
+    }
+
+    public Integer getUserSimpleInfoHandlerParamConverter() {
+        System.out.println("param vonverter method invoke");
+        return 123;
+    }
+
+
+    public UserInfo getUserSimpleInfoHandlerRetConverter(UserInfo userInfo) {
+        System.out.println("param vonverter method invoke");
+        return userInfo;
+    }
 
 
     @Data
