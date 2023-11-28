@@ -9,10 +9,20 @@ public enum DependencyType {
     SOFT(2),
     WEAK(3);
 
-    final int value;
+    final int code;
 
-    DependencyType(int value) {
-        this.value = value;
+    DependencyType(int code) {
+        this.code = code;
+    }
+
+
+    public static DependencyType codeOf(int value) {
+        for (DependencyType type : DependencyType.values()) {
+            if (type.code == value) {
+                return type;
+            }
+        }
+        return null;
     }
 
 }

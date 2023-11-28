@@ -62,6 +62,11 @@ public class DefaultDagNode<T> implements DagNode<T> {
     }
 
     @Override
+    public Map<String, DependencyType> dependNodeTypeMap() {
+        return new HashMap<>(dependencyMap);
+    }
+
+    @Override
     public Object getAttribute(String key) {
         Objects.requireNonNull(key, "dag node attribute key must not be null");
         return attributeMap.get(key);

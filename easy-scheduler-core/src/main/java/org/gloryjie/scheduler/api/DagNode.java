@@ -1,5 +1,6 @@
 package org.gloryjie.scheduler.api;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -47,6 +48,8 @@ public interface DagNode<R> {
      * @return A set of dependent node names.
      */
     Set<String> dependNodeNames();
+
+    Map<String, DependencyType> dependNodeTypeMap();
 
     /**
      * Returns the timeout value of the function.

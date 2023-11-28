@@ -3,6 +3,7 @@ package org.gloryjie.scheduler.core;
 import com.google.common.graph.ImmutableValueGraph;
 import org.gloryjie.scheduler.api.DagGraph;
 import org.gloryjie.scheduler.api.DagNode;
+import org.gloryjie.scheduler.api.DependencyType;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -80,6 +81,12 @@ public class DefaultDagGraph implements DagGraph {
         return graph.successors(nodeName).stream()
                 .map(dagNodeMap::get)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public DependencyType getNodeDepencencyType(String src, String end) {
+        Integer weight = graph.edgeValueOrDefault(src, end, DependencyType.STRONG.getCode());
+        return DependencyType.codeOf(weight);
     }
 
     @Override

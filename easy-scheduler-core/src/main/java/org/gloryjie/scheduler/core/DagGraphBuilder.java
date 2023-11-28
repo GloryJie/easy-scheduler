@@ -1,13 +1,9 @@
 package org.gloryjie.scheduler.core;
 
-import com.google.common.collect.Sets;
 import com.google.common.graph.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.gloryjie.scheduler.api.DagContext;
-import org.gloryjie.scheduler.api.DagGraph;
-import org.gloryjie.scheduler.api.DagNode;
-import org.gloryjie.scheduler.api.NodeHandler;
+import org.gloryjie.scheduler.api.*;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -115,8 +111,8 @@ public class DagGraphBuilder {
         for (Map.Entry<String, DagNode<?>> entry : nodeMap.entrySet()) {
             String nodeName = entry.getKey();
             DagNode<?> dagNode = entry.getValue();
-            Set<String> dependencyDagNodeNames =
-                    Optional.ofNullable(dagNode.dependNodeNames()).orElse(Sets.newHashSet());
+            Map<String, DependencyType> dependNodeTypeMap = dagNode.dependNodeTypeMap();
+            Set<String> dependencyDagNodeNames = dependNodeTypeMap.keySet();
 
             // add node
             mutableValueGraph.addNode(dagNode.getNodeName());
@@ -129,7 +125,8 @@ public class DagGraphBuilder {
                             nodeName, dependencyDagNodeName);
                     throw new IllegalArgumentException(errMsg);
                 }
-                mutableValueGraph.putEdgeValue(dependNode.getNodeName(), dagNode.getNodeName(), DEFAULT_WEIGHT);
+                int weight = dependNodeTypeMap.getOrDefault(dependencyDagNodeName, DependencyType.STRONG).getCode();
+                mutableValueGraph.putEdgeValue(dependNode.getNodeName(), dagNode.getNodeName(), weight);
             }
         }
 
