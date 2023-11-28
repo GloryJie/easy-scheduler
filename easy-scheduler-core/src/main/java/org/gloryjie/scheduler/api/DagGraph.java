@@ -64,8 +64,32 @@ public interface DagGraph {
     List<DagNode<?>> getSuccessorNodes(String nodeName);
 
 
-    default Long timeout(){
+    default Long timeout() {
         return null;
     }
+
+
+    /**
+     * Retrieves the value of the attribute associated with the specified key.
+     *
+     * @param key the key of the attribute
+     * @return the value of the attribute, or null if the attribute does not exist
+     */
+    Object getAttribute(String key);
+
+    /**
+     * Sets the attribute with the specified key to the given value.
+     *
+     * @param key   the key of the attribute
+     * @param value the value of the attribute
+     */
+    void setAttribute(String key, Object value);
+
+    /**
+     * Removes the attribute with the given key.
+     *
+     * @param key the key of the attribute to remove
+     */
+    void removeAttribute(String key);
 
 }

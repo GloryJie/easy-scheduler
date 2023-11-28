@@ -140,9 +140,7 @@ public class DefaultDagNode<T> implements DagNode<T> {
 
         public DagNode<T> build() {
             DefaultDagNode<T> dagNode = new DefaultDagNode<>(nodeName, handler, denpencies, timeout);
-            for (Map.Entry<String, Object> entry : this.attributes.entrySet()) {
-                dagNode.setAttribute(entry.getKey(), entry.getValue());
-            }
+            this.attributes.forEach(dagNode::setAttribute);
             return dagNode;
         }
     }

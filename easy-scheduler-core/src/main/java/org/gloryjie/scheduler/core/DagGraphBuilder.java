@@ -39,9 +39,12 @@ public class DagGraphBuilder {
 
     private Consumer<DagContext> endMethod;
 
+    private Map<String, Object> attributes;
+
     public DagGraphBuilder() {
         mutableValueGraph = ValueGraphBuilder.directed().allowsSelfLoops(false).build();
         nodeMap = new HashMap<>();
+        attributes = new HashMap<>();
     }
 
     public DagGraphBuilder graphName(String graphName) {
@@ -86,6 +89,11 @@ public class DagGraphBuilder {
         return this;
     }
 
+    public DagGraphBuilder attribute(String key, Object value) {
+        this.attributes.put(key, value);
+        return this;
+    }
+
     public DagGraph build() {
         if (MapUtils.isEmpty(nodeMap)) {
             throw new IllegalArgumentException("dag graph must not be empty");
@@ -97,8 +105,9 @@ public class DagGraphBuilder {
 
         // build dag graph
         ImmutableValueGraph immutableValueGraph = ImmutableValueGraph.copyOf(mutableValueGraph);
-
-        return new DefaultDagGraph(graphName, immutableValueGraph, nodeMap, timeout);
+        DefaultDagGraph dagGraph = new DefaultDagGraph(graphName, immutableValueGraph, nodeMap, timeout);
+        this.attributes.forEach(dagGraph::setAttribute);
+        return dagGraph;
     }
 
 
