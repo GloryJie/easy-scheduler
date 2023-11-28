@@ -29,6 +29,10 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
 
     public static final String ANONYMOUS_HANDLER = "anonymous_handler";
 
+    public static final String GRAPH_DEFINITION_ATTRIBUTE = "#GRAPH_DEFINITION#";
+
+    public static final String NODE_DEFINITION_ATTRIBUTE = "NODE_DEFINITION";
+
     private final DagGraphReader graphReader;
 
     private final ConcurrentHashMap<String, NodeHandler<Object>> handlerMap = new ConcurrentHashMap<>();
@@ -59,7 +63,8 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
 
         DagGraphBuilder dagGraphBuilder = new DagGraphBuilder()
                 .graphName(graphDefinition.getGraphName())
-                .timeout(graphDefinition.getTimeout());
+                .timeout(graphDefinition.getTimeout())
+                .attribute(GRAPH_DEFINITION_ATTRIBUTE, graphDefinition);
 
         setInitAndEndMethod(graphDefinition, dagGraphBuilder);
 
@@ -143,6 +148,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
                 .dependOn(nodeDefinition.getDependsOn().toArray(new String[0]))
                 .timeout(nodeDefinition.getTimeout())
                 .handler(handler)
+                .attribute(NODE_DEFINITION_ATTRIBUTE, nodeDefinition)
                 .build();
     }
 
