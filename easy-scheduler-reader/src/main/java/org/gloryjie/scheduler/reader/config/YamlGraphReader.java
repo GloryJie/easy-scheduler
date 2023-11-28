@@ -1,8 +1,6 @@
 package org.gloryjie.scheduler.reader.config;
 
 import com.google.common.collect.Lists;
-import org.gloryjie.scheduler.reader.DagGraphConfigType;
-import org.gloryjie.scheduler.reader.ConfigGraphReader;
 import org.gloryjie.scheduler.reader.DagGraphReadException;
 import org.gloryjie.scheduler.reader.GraphDefinition;
 import org.yaml.snakeyaml.Yaml;

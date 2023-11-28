@@ -1,8 +1,8 @@
 package reader.data;
 
 import com.google.common.collect.Lists;
-import org.gloryjie.scheduler.dynamic.annotation.ContextParam;
-import org.gloryjie.scheduler.dynamic.annotation.MethodNodeHandler;
+import org.gloryjie.scheduler.reader.annotation.ContextParam;
+import org.gloryjie.scheduler.reader.annotation.MethodNodeHandler;
 
 import java.util.ArrayList;
 import java.util.List;

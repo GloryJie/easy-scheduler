@@ -4,7 +4,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.gloryjie.scheduler.core.DagEngineException;
-import org.gloryjie.scheduler.reader.AnnotationGraphReader;
 import org.gloryjie.scheduler.reader.DagNodeDefinition;
 import org.gloryjie.scheduler.reader.GraphDefinition;
 

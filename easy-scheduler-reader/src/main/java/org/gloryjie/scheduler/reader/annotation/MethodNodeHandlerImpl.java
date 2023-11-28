@@ -1,14 +1,15 @@
-package org.gloryjie.scheduler.dynamic;
+package org.gloryjie.scheduler.reader.annotation;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.gloryjie.scheduler.api.DagContext;
 import org.gloryjie.scheduler.api.DagNode;
 import org.gloryjie.scheduler.api.NodeHandler;
 import org.gloryjie.scheduler.core.DagEngineException;
-import org.gloryjie.scheduler.dynamic.annotation.ContextParam;
-import org.gloryjie.scheduler.dynamic.annotation.MethodNodeHandler;
+import org.gloryjie.scheduler.reader.AbstractGraphFactory;
+import org.gloryjie.scheduler.reader.DagNodeDefinition;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -43,14 +44,15 @@ public class MethodNodeHandlerImpl implements NodeHandler<Object> {
         Object[] methodArg = null;
 
         try {
-            methodArg = readMethodArg(dagContext);
+            methodArg = readMethodArg(dagNode, dagContext);
         } catch (Exception e) {
             String msg = String.format("NodeHandler[%s] failed to read method[%s] args", handlerName(), method.getName());
             throw new DagEngineException(msg, e);
         }
 
         try {
-            return MethodUtils.invokeMethod(bean, method.getName(), methodArg);
+            Object invokeResult = MethodUtils.invokeMethod(bean, method.getName(), methodArg);
+            return converterInvokeResult(dagNode, dagContext, invokeResult);
         } catch (Exception e) {
             String msg = String.format("Failed to invoke method: %s", method.getName());
             throw new DagEngineException(msg, e);
@@ -62,14 +64,45 @@ public class MethodNodeHandlerImpl implements NodeHandler<Object> {
         return annotation.timeout();
     }
 
-    private Object[] readMethodArg(DagContext dagContext) throws Exception {
+
+    private Object converterInvokeResult(DagNode dagNode, DagContext dagContext, Object result) throws Exception {
+        Object value = dagNode.getAttribute(AbstractGraphFactory.NODE_DEFINITION_ATTRIBUTE);
+        Object context = dagContext.getContext();
+        if (value instanceof DagNodeDefinition && context != null) {
+            DagNodeDefinition nodeDefinition = ((DagNodeDefinition) value);
+            if (StringUtils.isNotEmpty(nodeDefinition.getRetConverter())) {
+                String retConverterMethod = nodeDefinition.getRetConverter();
+                return MethodUtils.invokeMethod(context, retConverterMethod, result);
+            }
+        }
+        return result;
+    }
+
+    private Object[] readMethodArg(DagNode dagNode, DagContext dagContext) throws Exception {
         Parameter[] parameters = method.getParameters();
         if (parameters == null || parameters.length == 0) {
             return ArrayUtils.EMPTY_OBJECT_ARRAY;
         }
 
         Object[] args = new Object[parameters.length];
+        Object value = dagNode.getAttribute(AbstractGraphFactory.NODE_DEFINITION_ATTRIBUTE);
+        Object context = dagContext.getContext();
+        if (value instanceof DagNodeDefinition && context != null) {
+            DagNodeDefinition nodeDefinition = ((DagNodeDefinition) value);
+            if (StringUtils.isNotEmpty(nodeDefinition.getParamConverter())) {
+                Object paramConverterResult = MethodUtils.invokeMethod(context, nodeDefinition.getParamConverter());
+                if (paramConverterResult instanceof Object[]) {
+                    args = (Object[]) paramConverterResult;
+                } else {
+                    args[0] = paramConverterResult;
+                }
 
+                // If a param converter is specified, use its return value directly
+                return args;
+            }
+        }
+
+        // If no param converter is specified, read arguments from ContextParam annotation or parameter name
         for (int i = 0; i < parameters.length; i++) {
             Parameter parameter = parameters[i];
             ContextParam contextParam = parameter.getAnnotation(ContextParam.class);
@@ -77,16 +110,13 @@ public class MethodNodeHandlerImpl implements NodeHandler<Object> {
 
             if (contextParam != null) {
                 String paramName = contextParam.value();
-
                 arg = readValueByName(paramName, dagContext);
-
                 if (arg == null && contextParam.required()) {
                     throw new DagEngineException(String.format("could not get param[%s] from context", paramName));
                 }
             } else {
                 arg = readValueByName(parameter.getName(), dagContext);
             }
-
             args[i] = arg;
         }
 
@@ -96,7 +126,6 @@ public class MethodNodeHandlerImpl implements NodeHandler<Object> {
 
     private Object readValueByName(String name, DagContext dagContext) throws Exception {
         Object value = null;
-
         Object userContext = dagContext.getContext();
 
         // read from user context first

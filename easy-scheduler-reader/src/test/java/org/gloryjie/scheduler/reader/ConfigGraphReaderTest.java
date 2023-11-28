@@ -2,6 +2,7 @@ package org.gloryjie.scheduler.reader;
 
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
+import org.gloryjie.scheduler.reader.config.ConfigGraphReader;
 import org.gloryjie.scheduler.reader.config.JsonGraphReader;
 import org.gloryjie.scheduler.reader.config.YamlGraphReader;
 import org.junit.jupiter.params.ParameterizedTest;

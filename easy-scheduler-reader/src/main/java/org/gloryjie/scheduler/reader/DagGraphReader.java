@@ -1,5 +1,7 @@
 package org.gloryjie.scheduler.reader;
 
+import org.gloryjie.scheduler.reader.config.DagGraphConfigType;
+
 import java.util.List;
 
 public interface DagGraphReader {

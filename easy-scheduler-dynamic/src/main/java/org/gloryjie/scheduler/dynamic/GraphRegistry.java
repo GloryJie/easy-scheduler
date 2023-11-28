@@ -1,7 +1,7 @@
 package org.gloryjie.scheduler.dynamic;
 
 import org.gloryjie.scheduler.api.DagGraph;
-import org.gloryjie.scheduler.reader.DagGraphConfigType;
+import org.gloryjie.scheduler.reader.config.DagGraphConfigType;
 
 public interface GraphRegistry {
 

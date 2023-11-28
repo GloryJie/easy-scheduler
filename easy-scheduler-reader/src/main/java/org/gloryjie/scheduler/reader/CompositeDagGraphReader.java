@@ -1,6 +1,9 @@
 package org.gloryjie.scheduler.reader;
 
+import org.gloryjie.scheduler.reader.annotation.AnnotationGraphReader;
 import org.gloryjie.scheduler.reader.annotation.GraphClassAnnotationGraphReader;
+import org.gloryjie.scheduler.reader.config.ConfigGraphReader;
+import org.gloryjie.scheduler.reader.config.DagGraphConfigType;
 import org.gloryjie.scheduler.reader.config.JsonGraphReader;
 import org.gloryjie.scheduler.reader.config.YamlGraphReader;
 

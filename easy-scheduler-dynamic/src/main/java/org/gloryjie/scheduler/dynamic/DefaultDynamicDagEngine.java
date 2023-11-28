@@ -9,10 +9,11 @@ import org.gloryjie.scheduler.api.DagGraph;
 import org.gloryjie.scheduler.api.DagResult;
 import org.gloryjie.scheduler.api.NodeHandler;
 import org.gloryjie.scheduler.core.DagEngineException;
-import org.gloryjie.scheduler.dynamic.annotation.MethodNodeHandler;
-import org.gloryjie.scheduler.reader.DagGraphConfigType;
 import org.gloryjie.scheduler.reader.DagGraphFactory;
 import org.gloryjie.scheduler.reader.annotation.GraphClass;
+import org.gloryjie.scheduler.reader.annotation.MethodNodeHandler;
+import org.gloryjie.scheduler.reader.annotation.MethodNodeHandlerImpl;
+import org.gloryjie.scheduler.reader.config.DagGraphConfigType;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;

@@ -3,8 +3,8 @@ package org.gloryjie.scheduler.auto;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.gloryjie.scheduler.auto.context.UserInfoContext;
-import org.gloryjie.scheduler.dynamic.annotation.ContextParam;
-import org.gloryjie.scheduler.dynamic.annotation.MethodNodeHandler;
+import org.gloryjie.scheduler.reader.annotation.ContextParam;
+import org.gloryjie.scheduler.reader.annotation.MethodNodeHandler;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -12,6 +12,7 @@ import org.gloryjie.scheduler.core.DagEngineException;
 import org.gloryjie.scheduler.core.DagGraphBuilder;
 import org.gloryjie.scheduler.core.DefaultDagNode;
 import org.gloryjie.scheduler.core.DefaultNodeHandler;
+import org.gloryjie.scheduler.reader.config.DagGraphConfigType;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
@@ -211,6 +212,11 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
             Object result = handler != null ? handler.execute(dagNode, dagContext) : null;
 
             Object context = dagContext.getContext();
+            // Execute other actions
+            if (mergeExpressConsumer != null) {
+                mergeExpressConsumer.accept(dagContext);
+            }
+
             // If the result is not null, set the field to context
             if (result != null && StringUtils.isNotEmpty(fieldName)) {
                 try {
@@ -228,10 +234,6 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
                 } catch (Exception e) {
                     throw new DagEngineException(String.format("Failed to set field[%s] to context", fieldName), e);
                 }
-            }
-            // Execute other actions
-            if (mergeExpressConsumer != null) {
-                mergeExpressConsumer.accept(dagContext);
             }
 
             return result;

@@ -1,4 +1,4 @@
-package org.gloryjie.scheduler.reader;
+package org.gloryjie.scheduler.reader.config;
 
 public enum DagGraphConfigType {
     JSON,
