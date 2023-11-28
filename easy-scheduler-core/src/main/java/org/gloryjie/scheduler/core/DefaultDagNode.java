@@ -1,14 +1,11 @@
 package org.gloryjie.scheduler.core;
 
+import lombok.ToString;
 import org.gloryjie.scheduler.api.DagNode;
 import org.gloryjie.scheduler.api.NodeHandler;
-import lombok.Builder;
-import lombok.ToString;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @ToString(exclude = {"handler"})
 public class DefaultDagNode<T> implements DagNode<T> {
@@ -19,6 +16,8 @@ public class DefaultDagNode<T> implements DagNode<T> {
     private final Set<String> dependencies;
 
     private Long timeout;
+
+    private final ConcurrentHashMap<String, Object> attributeMap = new ConcurrentHashMap<>();
 
     public DefaultDagNode(String nodeName) {
         this(nodeName, null);
@@ -77,6 +76,25 @@ public class DefaultDagNode<T> implements DagNode<T> {
         return new HashSet<>(dependencies);
     }
 
+    @Override
+    public Object getAttribute(String key) {
+        Objects.requireNonNull(key, "dag node attribute key must not be null");
+        return attributeMap.get(key);
+    }
+
+    @Override
+    public void setAttribute(String key, Object value) {
+        Objects.requireNonNull(key, "dag node attribute key must not be null");
+        Objects.requireNonNull(value, "dag node attribute value must not be null");
+        attributeMap.put(key, value);
+    }
+
+    @Override
+    public void removeAttribute(String key) {
+        Objects.requireNonNull(key, "dag node attribute key must not be null");
+        attributeMap.remove(key);
+    }
+
 
     public static <T> Builder<T> builder() {
         return new Builder<>();
@@ -88,6 +106,7 @@ public class DefaultDagNode<T> implements DagNode<T> {
         private NodeHandler<T> handler;
         private final Set<String> denpencies = new HashSet<>();
 
+        private final Map<String, Object> attributes = new HashMap<>();
         private Long timeout;
 
         Builder() {
@@ -114,8 +133,17 @@ public class DefaultDagNode<T> implements DagNode<T> {
             return this;
         }
 
+        public Builder<T> attribute(String key, Object value) {
+            this.attributes.put(key, value);
+            return this;
+        }
+
         public DagNode<T> build() {
-            return new DefaultDagNode<>(nodeName, handler, denpencies, timeout);
+            DefaultDagNode<T> dagNode = new DefaultDagNode<>(nodeName, handler, denpencies, timeout);
+            for (Map.Entry<String, Object> entry : this.attributes.entrySet()) {
+                dagNode.setAttribute(entry.getKey(), entry.getValue());
+            }
+            return dagNode;
         }
     }
 
