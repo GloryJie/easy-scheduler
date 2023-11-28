@@ -195,17 +195,21 @@ public class SingleThreadDagEngine implements DagEngine {
             NodeResultImpl<Object> nodeResult = new NodeResultImpl<>(node.getNodeName());
             nodeResult.setStartTime(System.currentTimeMillis());
 
-            try {
-                boolean evaluateResult = curHandler.evaluate(node, dagContext);
-                log.debug("Graph[{}] node[{}] evaluate result: {}", dagGraph.getGraphName(), node.getNodeName(), evaluateResult);
-                if (evaluateResult) {
-                    Object result = curHandler.execute(node, dagContext);
-                    nodeResult.setResult(result);
-                    nodeResult.setState(NodeState.SUCCEEDED);
+            if (curHandler == null) {
+                nodeResult.setState(NodeState.SUCCEEDED);
+            } else {
+                try {
+                    boolean evaluateResult = curHandler.evaluate(node, dagContext);
+                    log.debug("Graph[{}] node[{}] evaluate result: {}", dagGraph.getGraphName(), node.getNodeName(), evaluateResult);
+                    if (evaluateResult) {
+                        Object result = curHandler.execute(node, dagContext);
+                        nodeResult.setResult(result);
+                        nodeResult.setState(NodeState.SUCCEEDED);
+                    }
+                } catch (Exception e) {
+                    nodeResult.setThrowable(e);
+                    nodeResult.setState(NodeState.FAILED);
                 }
-            } catch (Exception e) {
-                nodeResult.setThrowable(e);
-                nodeResult.setState(NodeState.FAILED);
             }
 
             nodeResult.setEndTime(System.currentTimeMillis());
