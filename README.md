@@ -92,22 +92,22 @@
 
 ```java
 NodeHandler printHandler=DefaultNodeHandler.builder()
-        .handlerName("A")
-        .when(context->context.getContext()!=null)
-        .action((dagNode,dagContext)->{
+    .handlerName("A")
+    .when(context->context.getContext()!=null)
+    .action((dagNode,dagContext)->{
         System.out.println("Hello: "+dagNode.getNodeName());
         return null;
-        }).build();
+    }).build();
 ```
 
 创建DagNode, B节点依赖A节点
 
 ```java
 DagNode dagNodeA=DefaultDagNode.builder().nodeName("A")
-        .handler(printHandler).build();
+    .handler(printHandler).build();
 
-        DagNode dagNodeB=DefaultDagNode.builder().nodeName("B")
-        .handler(printHandler).dependOn("A").build();
+DagNode dagNodeB=DefaultDagNode.builder().nodeName("B")
+    .handler(printHandler).dependOn("A").build();
 ```
 
 构建DagGraph
@@ -123,7 +123,7 @@ DagGraph dagGraph=new DagGraphBuilder()
 
 ```java
 DagEngine dagEngine=new ConcurrentDagEngine();
-        dagEngine.fire(dagGraph,"your context");
+dagEngine.fire(dagGraph,"your context");
 ```
 
 ### 注解配置使用
@@ -156,26 +156,26 @@ easy-scheduler:
 
 @MethodNodeHandler("getUserCourseListHandler")
 public List<String> getCourseList(@ContextParam("uid") Integer uid){
-        log.info("getUserCourseListHandler param: "+uid);
-        return Lists.newArrayList("Math","Java","Go","Rust");
-        }
+    log.info("getUserCourseListHandler param: "+uid);
+    return Lists.newArrayList("Math","Java","Go","Rust");
+}
 
 @MethodNodeHandler("getUserCourseScoreHandler")
 public List<UserInfoContext.Course>getCourseScoreList(@ContextParam("uid") Integer uid){
-        List<UserInfoContext.Course>courseList=new ArrayList<>();
-        courseList.add(new UserInfoContext.Course("Math",60));
-        courseList.add(new UserInfoContext.Course("Java",70));
-        return courseList;
-        }
+    List<UserInfoContext.Course>courseList=new ArrayList<>();
+    courseList.add(new UserInfoContext.Course("Math",60));
+    courseList.add(new UserInfoContext.Course("Java",70));
+    return courseList;
+}
 
 @MethodNodeHandler("getUserSimpleInfoHandler")
 public UserInfoContext.UserInfo getUserSimpleInfoHandler(@ContextParam("uid") Integer uid){
-        UserInfoContext.UserInfo userInfo=new UserInfoContext.UserInfo();
-        userInfo.setName("Jack");
-        userInfo.setAge(22);
-        userInfo.setAddress("Shenzhen");
-        return userInfo;
-        }
+    UserInfoContext.UserInfo userInfo=new UserInfoContext.UserInfo();
+    userInfo.setName("Jack");
+    userInfo.setAge(22);
+    userInfo.setAddress("Shenzhen");
+    return userInfo;
+}
 ```
 
 在自定义的Context中使用`@GraphNode`、`@GraphClass`来描述节点依赖关系
@@ -199,14 +199,13 @@ public class UserInfoContext {
 ```
 
 之后在需要的地方注入`DynamicDagEngine`实例，并执行
-
 ```java
 
 UserInfoContext userInfoContext=new UserInfoContext();
-        userInfoContext.setUid(123);
+userInfoContext.setUid(123);
 
-        DagResult dagResult=dynamicDagEngine.fireContext(userInfoContext);
-        System.out.println(userInfoContext);
+DagResult dagResult=dynamicDagEngine.fireContext(userInfoContext);
+System.out.println(userInfoContext);
 ```
 
 
