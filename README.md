@@ -153,6 +153,7 @@ easy-scheduler:
 将需要的方法作为NodeHandler的加上注解 `@MethodNodeHandler`
 
 ```java
+
 @MethodNodeHandler("getUserCourseListHandler")
 public List<String> getCourseList(@ContextParam("uid") Integer uid){
         log.info("getUserCourseListHandler param: "+uid);
@@ -180,7 +181,6 @@ public UserInfoContext.UserInfo getUserSimpleInfoHandler(@ContextParam("uid") In
 在自定义的Context中使用`@GraphNode`、`@GraphClass`来描述节点依赖关系
 
 ```java
-
 @GraphClass
 @Data
 public class UserInfoContext {
@@ -201,6 +201,7 @@ public class UserInfoContext {
 之后在需要的地方注入`DynamicDagEngine`实例，并执行
 
 ```java
+
 UserInfoContext userInfoContext=new UserInfoContext();
         userInfoContext.setUid(123);
 
