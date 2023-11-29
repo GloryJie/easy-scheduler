@@ -1,6 +1,7 @@
 package org.gloryjie.scheduler.core;
 
 import org.gloryjie.scheduler.api.*;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -77,8 +78,10 @@ public class DagEngineTest {
         NodeHandler printHandler = DefaultNodeHandler.builder()
                 .handlerName("A")
                 .when(context -> context.getContext() != null)
-                .action(action)
-                .build();
+                .action((dagNode, dagContext) -> {
+                    System.out.println("Hello: " + dagNode.getNodeName());
+                    return null;
+                }).build();
 
         DagNode dagNodeA = DefaultDagNode.builder().nodeName("A").handler(printHandler).build();
 
@@ -88,6 +91,34 @@ public class DagEngineTest {
                 .build();
 
         return dagGraph;
+    }
+
+
+    @Test
+    public void helloWorldTest() {
+        NodeHandler printHandler = DefaultNodeHandler.builder()
+                .handlerName("printHandler")
+                .when(context -> context.getContext() != null)
+                .action((dagNode, dagContext) -> {
+                    System.out.println("Hello DagNode: " + dagNode.getNodeName());
+                    return null;
+                }).build();
+
+        DagNode dagNodeA = DefaultDagNode.builder().nodeName("A").handler(printHandler).build();
+
+        DagNode dagNodeB = DefaultDagNode.builder().nodeName("B")
+                .handler(printHandler).dependOn("A").build();
+
+        DagGraph dagGraph = new DagGraphBuilder()
+                .graphName("helloGraph")
+                .addNodes(dagNodeA, dagNodeB)
+                .build();
+
+        DagEngine dagEngine = new ConcurrentDagEngine();
+
+        dagEngine.fire(dagGraph, "your context");
+
+
     }
 
 

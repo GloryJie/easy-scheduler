@@ -1,6 +1,2 @@
 easy-scheduler:
-  enable: true
-  base: "test"
-  scanGraphPackage:
-    - "org.gloryjie"
-  graph-class: "org.gloryjie.scheduler.auto.context.UserInfoContext"
+  scanGraphPackage: "org.gloryjie"

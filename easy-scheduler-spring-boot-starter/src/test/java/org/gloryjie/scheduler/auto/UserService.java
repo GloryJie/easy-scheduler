@@ -28,7 +28,6 @@ public class UserService {
         return courseList;
     }
 
-
     @MethodNodeHandler("getUserSimpleInfoHandler")
     public UserInfoContext.UserInfo getUserSimpleInfoHandler(@ContextParam("uid") Integer uid) {
         System.out.println("getUserSimpleInfoHandler param: " + uid);
