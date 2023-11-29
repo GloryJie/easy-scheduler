@@ -116,7 +116,14 @@ public class DagEngineTest {
 
         DagEngine dagEngine = new ConcurrentDagEngine();
 
-        dagEngine.fire(dagGraph, "your context");
+        DagResult dagResult = dagEngine.fire(dagGraph, "your context");
+        // check result state
+        if (dagResult.getState() == DagState.SUCCEED) {
+            // do something
+        } else {
+            Throwable err = dagResult.getThrowable();
+            // do something
+        }
 
 
     }

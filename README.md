@@ -123,7 +123,14 @@ DagGraph dagGraph=new DagGraphBuilder()
 
 ```java
 DagEngine dagEngine=new ConcurrentDagEngine();
-dagEngine.fire(dagGraph,"your context");
+DagResult dagResult=dagEngine.fire(dagGraph,"your context");
+// check result state
+if(dagResult.getState()==DagState.SUCCEED){
+    // do something
+}else{
+    Throwable err=dagResult.getThrowable();
+    // do something
+}
 ```
 
 ### 注解配置使用
