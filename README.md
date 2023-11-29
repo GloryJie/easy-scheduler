@@ -2,7 +2,7 @@
 
 ## 介绍
 
-一款基于有向无环图DAG(directed acyclic graph)的本地任务编排和调度执行器，设计目标是轻量、简单易用。
+基于有向无环图DAG(directed acyclic graph)的本地任务编排和调度执行器，设计目标是轻量、简单易用。
 
 ## 特点
 
@@ -28,7 +28,7 @@
 - 节点执行完成后，会将其子节点的入度减1
 - 节点入度为0时，表示该节点可以执行
 
-示例如下，一个是原始的DAG入度信息，一个是运行时的DAG入度的变化。
+示例如下，左侧是原始的DAG入度信息，右侧运行时的DAG入度的变化。留意节点入度数值的变化。
 
 <img title="运行时DagGraph的入度变化" src="./doc/images/DagGraph-indegree-1.png" alt="image" width="1000">
 
