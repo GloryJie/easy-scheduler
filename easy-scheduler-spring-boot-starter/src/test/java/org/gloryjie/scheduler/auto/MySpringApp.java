@@ -2,6 +2,7 @@ package org.gloryjie.scheduler.auto;
 
 
 import org.gloryjie.scheduler.api.DagResult;
+import org.gloryjie.scheduler.api.DagState;
 import org.gloryjie.scheduler.auto.context.UserInfoContext;
 import org.gloryjie.scheduler.dynamic.DynamicDagEngine;
 import org.springframework.boot.SpringApplication;
@@ -27,8 +28,12 @@ public class MySpringApp {
         userInfoContext.setUid(123);
 
         DagResult dagResult = dynamicDagEngine.fireContext(userInfoContext);
-        System.out.println(userInfoContext);
 
+        if (dagResult.getState() == DagState.SUCCEED) {
+            System.out.println(userInfoContext);
+        } else {
+            dagResult.getThrowable().printStackTrace();
+        }
 
     }
 

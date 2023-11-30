@@ -27,12 +27,13 @@ public class SpelGraphFactory extends AbstractGraphFactory {
         parserContext = ParserContext.TEMPLATE_EXPRESSION;
     }
 
-    public SpelGraphFactory(DagGraphReader reader, ParserContext parserContext) {
+    public SpelGraphFactory(DagGraphReader reader, BeanResolver beanResolver) {
         super(reader);
-        this.parserContext = parserContext;
+        this.beanResolver = beanResolver;
+        this.parserContext = ParserContext.TEMPLATE_EXPRESSION;
     }
 
-    public SpelGraphFactory(DagGraphReader reader, ParserContext parserContext, BeanResolver beanResolver) {
+    public SpelGraphFactory(DagGraphReader reader, BeanResolver beanResolver, ParserContext parserContext) {
         super(reader);
         this.parserContext = parserContext;
         this.beanResolver = beanResolver;

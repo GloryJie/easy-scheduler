@@ -13,7 +13,9 @@ import org.gloryjie.scheduler.spel.SpelGraphFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.expression.BeanFactoryResolver;
 
 @ConditionalOnProperty(prefix = "easy-scheduler", name = "enable", matchIfMissing = true, havingValue = "true")
 @EnableConfigurationProperties(EasySchedulerConfig.class)
@@ -41,8 +43,9 @@ public class EasySchedulerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DagGraphFactory dagGraphFactory(DagGraphReader dagGraphReader) {
-        return new SpelGraphFactory(dagGraphReader);
+    public DagGraphFactory dagGraphFactory(DagGraphReader dagGraphReader, ApplicationContext applicationContext) {
+        BeanFactoryResolver beanFactoryResolver = new BeanFactoryResolver(applicationContext);
+        return new SpelGraphFactory(dagGraphReader, beanFactoryResolver);
     }
 
 

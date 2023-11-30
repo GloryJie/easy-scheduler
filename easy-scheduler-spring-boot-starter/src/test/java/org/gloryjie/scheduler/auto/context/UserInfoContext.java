@@ -27,6 +27,9 @@ public class UserInfoContext {
     @GraphNode(handler = "sayHelloNodeHandler")
     private String sayWord;
 
+    @GraphNode(actions = "#{context.userInfo2 = @userService.getUserSimpleInfoHandler(context.uid)}", dependsOn = {"uid"})
+    private UserInfo userInfo2;
+
     @Data
     public static class UserInfo {
         private String name;
