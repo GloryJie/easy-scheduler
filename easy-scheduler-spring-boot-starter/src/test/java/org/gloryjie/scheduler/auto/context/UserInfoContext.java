@@ -24,6 +24,9 @@ public class UserInfoContext {
     @GraphNode(handler = "getUserCourseScoreHandler", dependsOn = "courseList")
     private List<Course> courseScoreList;
 
+    @GraphNode(handler = "sayHelloNodeHandler")
+    private String sayWord;
+
     @Data
     public static class UserInfo {
         private String name;

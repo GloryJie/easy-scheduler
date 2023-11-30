@@ -3,6 +3,7 @@ package org.gloryjie.scheduler.auto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.gloryjie.scheduler.api.NodeHandler;
 import org.gloryjie.scheduler.core.DagEngineException;
 import org.gloryjie.scheduler.dynamic.DynamicDagEngine;
 import org.gloryjie.scheduler.reader.annotation.GraphClass;
@@ -45,12 +46,25 @@ public class HandlerAndGraphProcessor implements SmartInitializingSingleton,
         if (CollectionUtils.isEmpty(dynamicDagEngineList)) {
             return;
         }
+        // Register all impl node handlers
+        registerImplNodeHandlerBean();
+
         // Register all method node handlers
         registerMethodNodeHandler();
 
         // Register all annotation graphs
         registerAnnotationGraph();
 
+    }
+
+    private void registerImplNodeHandlerBean() {
+        Map<String, NodeHandler> beansOfType = applicationContext.getBeansOfType(NodeHandler.class, false, false);
+        for (NodeHandler nodeHandler : beansOfType.values()) {
+            for (DynamicDagEngine dynamicDagEngine : dynamicDagEngineList) {
+                dynamicDagEngine.registerHandler(nodeHandler);
+            }
+            log.info("[Easy-Scheduler]register impl node handler: {}", nodeHandler.handlerName());
+        }
     }
 
     private void registerAnnotationGraph() {

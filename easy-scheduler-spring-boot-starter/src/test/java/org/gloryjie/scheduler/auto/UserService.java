@@ -20,8 +20,6 @@ public class UserService {
 
     @MethodNodeHandler("getUserCourseScoreHandler")
     public List<UserInfoContext.Course> getCourseScoreList(@ContextParam("uid") Integer uid) {
-        System.out.println("getUserCourseScoreHandler param: " + uid);
-
         List<UserInfoContext.Course> courseList = new ArrayList<>();
         courseList.add(new UserInfoContext.Course("Math", 60));
         courseList.add(new UserInfoContext.Course("Java", 70));
@@ -30,8 +28,6 @@ public class UserService {
 
     @MethodNodeHandler("getUserSimpleInfoHandler")
     public UserInfoContext.UserInfo getUserSimpleInfoHandler(@ContextParam("uid") Integer uid) {
-        System.out.println("getUserSimpleInfoHandler param: " + uid);
-
         UserInfoContext.UserInfo userInfo = new UserInfoContext.UserInfo();
         userInfo.setName("Jack");
         userInfo.setAge(22);
