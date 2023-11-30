@@ -3,7 +3,9 @@ package org.gloryjie.scheduler.api;
 
 public interface NodeHandler<R> {
 
-    String handlerName();
+    default String handlerName() {
+        return "";
+    }
 
 
     default boolean evaluate(DagNode<Object> dagNode, DagContext dagContext) {
