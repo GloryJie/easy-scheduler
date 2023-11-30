@@ -14,6 +14,7 @@
         <module>easy-scheduler-spel</module>
         <module>easy-scheduler-dynamic</module>
         <module>easy-scheduler-spring-boot-starter</module>
+        <module>easy-scheduler-example</module>
     </modules>
 
     <properties>

@@ -1,0 +1,26 @@
+graphName: "userGraph"
+timeout: 1000
+nodes:
+  - nodeName: "userInfo"
+    timeout: 500
+    dependsOn: [ ]
+    handler: "getUserInfoByUid"
+    retFieldName: "userInfo"
+    conditions:
+      - "#{ context.uid != null }"
+  - nodeName: "courseList"
+    timeout: 500
+    dependsOn: [ ]
+    handler: "getCourseListByUid"
+    retFieldName: "courseList"
+    conditions:
+      - "#{ context.uid != null }"
+  - nodeName: "courseScoreList"
+    timeout: 500
+    dependsOn: [ "courseList" ]
+    handler: "getCourseScoreList"
+    retFieldName: "courseScoreList"
+    paramConverter: "uidAndCourseIdList"
+    conditions:
+      - "#{ context.uid != null }"
+      - "#{ context.courseList != null }"
