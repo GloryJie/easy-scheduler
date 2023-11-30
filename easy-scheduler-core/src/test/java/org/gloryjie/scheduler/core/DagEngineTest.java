@@ -78,10 +78,8 @@ public class DagEngineTest {
         NodeHandler printHandler = DefaultNodeHandler.builder()
                 .handlerName("A")
                 .when(context -> context.getContext() != null)
-                .action((dagNode, dagContext) -> {
-                    System.out.println("Hello: " + dagNode.getNodeName());
-                    return null;
-                }).build();
+                .action((action))
+                .build();
 
         DagNode dagNodeA = DefaultDagNode.builder().nodeName("A").handler(printHandler).build();
 

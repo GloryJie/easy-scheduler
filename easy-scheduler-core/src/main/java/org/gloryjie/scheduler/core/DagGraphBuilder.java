@@ -66,12 +66,7 @@ public class DagGraphBuilder {
         if (nodeMap.containsKey(dagNode.getNodeName())) {
             throw new IllegalArgumentException("dagNode name must be unique");
         }
-
-        Set<String> dependencyDagNodeNames = Optional.ofNullable(dagNode.dependNodeNames())
-                .orElse(new HashSet<>());
-
         nodeMap.put(dagNode.getNodeName(), dagNode);
-
         return this;
     }
 
