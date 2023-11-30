@@ -2,16 +2,14 @@ package org.gloryjie.scheduler.core;
 
 import org.gloryjie.scheduler.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class NodeExecuteFailTest {
+public class NodeExecuteFailTest extends DagEngineProvide {
 
 
     /**
@@ -147,14 +145,6 @@ public class NodeExecuteFailTest {
         assertEquals(NodeState.SUCCEEDED, dagResult.getNodeStateMap().get("C"));
 
         assertEquals(NodeState.FAILED, dagResult.getNodeStateMap().get("H"));
-    }
-
-
-    static Stream<Arguments> dagEngineProvider() {
-        return Stream.of(
-                Arguments.of(new ConcurrentDagEngine()),
-                Arguments.of(new SingleThreadDagEngine())
-        );
     }
 
 }
