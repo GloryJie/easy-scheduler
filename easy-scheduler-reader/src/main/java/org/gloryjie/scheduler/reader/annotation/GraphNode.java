@@ -28,5 +28,7 @@ public @interface GraphNode {
 
     String retConverter() default "";
 
+    Dependency[] dependsOnType() default @Dependency();
+
 
 }

@@ -4,6 +4,8 @@ package org.gloryjie.scheduler.reader;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.gloryjie.scheduler.api.DependencyType;
+import org.gloryjie.scheduler.reader.annotation.Dependency;
 import org.gloryjie.scheduler.reader.annotation.GraphClass;
 import org.gloryjie.scheduler.reader.annotation.GraphNode;
 
@@ -15,16 +17,17 @@ public class UserInfoContext {
 
     private Integer uid;
 
-    @GraphNode(handler = "getUserSimpleInfoHandler", dependsOn = "uid",
+    @GraphNode(handler = "getUserSimpleInfoHandler",
             paramConverter = "getUserSimpleInfoHandlerParamConverter",
             retConverter = "getUserSimpleInfoHandlerRetConverter")
     private UserInfo userInfo;
 
 
-    @GraphNode(handler = "getUserCourseListHandler", dependsOn = "uid")
+    @GraphNode(handler = "getUserCourseListHandler")
     private List<String> courseList;
 
-    @GraphNode(handler = "getUserCourseScoreHandler", dependsOn = "courseList")
+    @GraphNode(handler = "getUserCourseScoreHandler", dependsOn = "courseList",
+            dependsOnType = {@Dependency(type = DependencyType.SOFT, on = "userInfo")})
     private List<Course> courseScoreList;
 
 

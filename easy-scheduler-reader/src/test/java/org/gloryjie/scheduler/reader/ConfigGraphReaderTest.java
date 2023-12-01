@@ -2,6 +2,7 @@ package org.gloryjie.scheduler.reader;
 
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
+import org.gloryjie.scheduler.api.DependencyType;
 import org.gloryjie.scheduler.reader.config.ConfigGraphReader;
 import org.gloryjie.scheduler.reader.config.JsonGraphReader;
 import org.gloryjie.scheduler.reader.config.YamlGraphReader;
@@ -38,10 +39,12 @@ public class ConfigGraphReaderTest {
         assertNotNull(graphDefinition.getNodes());
 
         DagNodeDefinition dagNodeDefinition = graphDefinition.getNodes().get(0);
-        assertEquals("A",dagNodeDefinition.getNodeName());
-        assertEquals("testA",dagNodeDefinition.getHandler());
+        assertEquals("A", dagNodeDefinition.getNodeName());
+        assertEquals("testA", dagNodeDefinition.getHandler());
         assertEquals("aField", dagNodeDefinition.getRetFieldName());
         assertEquals(Sets.newHashSet("z"), dagNodeDefinition.getDependsOn());
+        assertEquals(Sets.newHashSet("b"), dagNodeDefinition.getDependsOnType().get(DependencyType.STRONG));
+        assertEquals(Sets.newHashSet("s"), dagNodeDefinition.getDependsOnType().get(DependencyType.SOFT));
         assertEquals("age == 10", dagNodeDefinition.getConditions().get(0));
         assertEquals("sex == 'male'", dagNodeDefinition.getConditions().get(1));
         assertEquals("age = age + 1", dagNodeDefinition.getActions().get(0));

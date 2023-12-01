@@ -11,6 +11,14 @@
         ],
         "handler": "testA",
         "retFieldName": "aField",
+        "dependsOnType": {
+          "STRONG": [
+            "b"
+          ],
+          "SOFT": [
+            "s"
+          ]
+        },
         "conditions": [
           "age == 10",
           "sex == 'male'"

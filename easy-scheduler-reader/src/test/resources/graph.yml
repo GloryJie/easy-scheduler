@@ -3,9 +3,12 @@ timeout: 1000
 nodes:
   - nodeName: "A"
     timeout: 50
-    dependsOn: ["z"]
+    dependsOn: [ "z" ]
     handler: "testA"
     retFieldName: "aField"
+    dependsOnType:
+      STRONG: [ "b" ]
+      SOFT: [ "s" ]
     conditions:
       - "age == 10"
       - "sex == 'male'"

@@ -2,8 +2,10 @@ package org.gloryjie.scheduler.reader;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.gloryjie.scheduler.api.DependencyType;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Getter
@@ -17,6 +19,8 @@ public class DagNodeDefinition {
     private Long timeout;
 
     private Set<String> dependsOn;
+
+    Map<DependencyType, Set<String>> dependsOnType;
 
     private String handler;
 

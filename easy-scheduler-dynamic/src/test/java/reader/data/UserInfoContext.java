@@ -15,13 +15,13 @@ public class UserInfoContext {
 
     private Integer uid;
 
-    @GraphNode(handler = "getUserSimpleInfoHandler", dependsOn = "uid",
+    @GraphNode(handler = "getUserSimpleInfoHandler",
             paramConverter = "getUserSimpleInfoHandlerParamConverter",
             retConverter = "getUserSimpleInfoHandlerRetConverter")
     private UserInfo userInfo;
 
 
-    @GraphNode(handler = "getUserCourseListHandler", dependsOn = "uid")
+    @GraphNode(handler = "getUserCourseListHandler")
     private List<String> courseList;
 
     @GraphNode(handler = "getUserCourseScoreHandler", dependsOn = "courseList")

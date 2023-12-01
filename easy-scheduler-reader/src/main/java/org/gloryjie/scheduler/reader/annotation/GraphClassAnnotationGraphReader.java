@@ -1,6 +1,6 @@
 package org.gloryjie.scheduler.reader.annotation;
 
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.gloryjie.scheduler.core.DagEngineException;
@@ -51,9 +51,6 @@ public class GraphClassAnnotationGraphReader implements AnnotationGraphReader {
     private void readGraphNodes(GraphDefinition graphDefinition, Class<?> aClass) {
         List<Field> hadAnnotationFieldList = FieldUtils.getFieldsListWithAnnotation(aClass, GraphNode.class);
 
-        Set<String> hadAnnotationFieldNameSet = hadAnnotationFieldList.stream()
-                .map(Field::getName).collect(Collectors.toSet());
-
         for (Field field : hadAnnotationFieldList) {
             DagNodeDefinition nodeDefinition = new DagNodeDefinition();
 
@@ -72,12 +69,25 @@ public class GraphClassAnnotationGraphReader implements AnnotationGraphReader {
             nodeDefinition.setParamConverter(graphNode.paramConverter());
             nodeDefinition.setRetConverter(graphNode.retConverter());
 
-            Collection<String> fieldSet = CollectionUtils.retainAll(arrayToStrList(graphNode.dependsOn()), hadAnnotationFieldNameSet);
-            nodeDefinition.setDependsOn(new HashSet<>(fieldSet));
+
+            nodeDefinition.setDependsOn(arrayToStrSet(graphNode.dependsOn()));
+            nodeDefinition.setDependsOnType(new HashMap<>());
+
+            if (ArrayUtils.isNotEmpty(graphNode.dependsOnType())) {
+                for (Dependency dependency : graphNode.dependsOnType()) {
+                    if (ArrayUtils.isNotEmpty(dependency.on())) {
+                        nodeDefinition.getDependsOnType().put(dependency.type(), arrayToStrSet(dependency.on()));
+                    }
+                }
+            }
 
             graphDefinition.getNodes().add(nodeDefinition);
         }
 
+    }
+
+    private Set<String> arrayToStrSet(String[] array) {
+        return new HashSet<>(arrayToStrList(array));
     }
 
 

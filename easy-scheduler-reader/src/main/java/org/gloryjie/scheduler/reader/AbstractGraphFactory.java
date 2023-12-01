@@ -1,6 +1,7 @@
 package org.gloryjie.scheduler.reader;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -143,14 +144,19 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
                 .action(action)
                 .build();
 
-        // create new dag node
-        return DefaultDagNode.<Object>builder()
+        DefaultDagNode.Builder<Object> builder = DefaultDagNode.<Object>builder()
                 .nodeName(nodeDefinition.getNodeName())
                 .dependOn(nodeDefinition.getDependsOn().toArray(new String[0]))
                 .timeout(nodeDefinition.getTimeout())
                 .handler(handler)
-                .attribute(NODE_DEFINITION_ATTRIBUTE, nodeDefinition)
-                .build();
+                .attribute(NODE_DEFINITION_ATTRIBUTE, nodeDefinition);
+
+        if (MapUtils.isNotEmpty(nodeDefinition.getDependsOnType())) {
+            nodeDefinition.getDependsOnType().forEach((k, v) -> builder.dependOn(k, v.toArray(new String[0])));
+        }
+
+        // create new dag node
+        return builder.build();
     }
 
 

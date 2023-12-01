@@ -1,5 +1,7 @@
 package org.gloryjie.scheduler.reader;
 
+import com.google.common.collect.Sets;
+import org.gloryjie.scheduler.api.DependencyType;
 import org.gloryjie.scheduler.reader.annotation.GraphClassAnnotationGraphReader;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +35,12 @@ public class GraphClassAnnotationGraphReaderTest {
         assertEquals("courseList", courseInfoNode.getRetFieldName());
         assertEquals("getUserCourseListHandler", courseInfoNode.getHandler());
 
+
+        DagNodeDefinition courseScoreNode = graphDefinition.getNodes().get(2);
+        assertEquals("courseScoreList", courseScoreNode.getRetFieldName());
+        assertEquals("getUserCourseScoreHandler", courseScoreNode.getHandler());
+        assertEquals(Sets.newHashSet("courseList"), courseScoreNode.getDependsOn());
+        assertEquals(Sets.newHashSet("userInfo"), courseScoreNode.getDependsOnType().get(DependencyType.SOFT));
 
     }
 
