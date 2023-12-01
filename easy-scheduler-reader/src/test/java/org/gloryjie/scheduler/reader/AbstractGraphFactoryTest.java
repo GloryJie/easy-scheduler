@@ -48,7 +48,7 @@ public class AbstractGraphFactoryTest {
         assertNotNull(dagGraph.getNodeInDegree());
         assertEquals(1, dagGraph.getNodeInDegree().get("userInfo"));
         assertEquals(1, dagGraph.getNodeInDegree().get("courseList"));
-        assertEquals(1, dagGraph.getNodeInDegree().get("courseScoreList"));
+        assertEquals(2, dagGraph.getNodeInDegree().get("courseScoreList"));
 
 
         UserInfoContext userInfoContext = new UserInfoContext();
