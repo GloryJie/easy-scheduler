@@ -33,6 +33,12 @@ public interface DagNode<R> {
         addDependency(DependencyType.STRONG, nodeName);
     }
 
+    /**
+     * Adds a dependency to the specified node.
+     *
+     * @param dependencyType the type of dependency
+     * @param nodeName       the name of the node to add the dependency to
+     */
     void addDependency(DependencyType dependencyType, String nodeName);
 
     /**
@@ -49,6 +55,11 @@ public interface DagNode<R> {
      */
     Set<String> dependNodeNames();
 
+    /**
+     * Retrieves a mapping of node names to dependency types that this dagNode depends on.
+     *
+     * @return A mapping of dependent node names to their corresponding dependency types.
+     */
     Map<String, DependencyType> dependNodeTypeMap();
 
     /**

@@ -67,6 +67,11 @@ public interface DagGraph {
 
     Map<String, DependencyType> getSuccessorNodeTypes(String nodeName);
 
+    /**
+     * Retrieves the timeout value for the DAG graph.
+     *
+     * @return the timeout value, or null if no timeout is set
+     */
     default Long timeout() {
         return null;
     }

@@ -74,6 +74,11 @@ public interface DagContext {
     Object remove(String key);
 
 
-    Map<String,Object> asMap();
+    /**
+     * Converts the context to a map.
+     *
+     * @return the context as a map
+     */
+    Map<String, Object> asMap();
 
 }
