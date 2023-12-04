@@ -35,6 +35,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
 
     public static final String NODE_DEFINITION_ATTRIBUTE = "NODE_DEFINITION";
 
+    private static final DefinitionValidator definitionValidator = new DefinitionValidator();
     private final DagGraphReader graphReader;
 
     private final ConcurrentHashMap<String, NodeHandler<Object>> handlerMap = new ConcurrentHashMap<>();
@@ -51,7 +52,9 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
     @Override
     public List<DagGraph> createConfigGraph(DagGraphConfigType configType, String configDefinition) {
         List<GraphDefinition> definitionList = graphReader.readFromConfig(configType, configDefinition);
-        return definitionList.stream().map(this::createDagGraph).collect(Collectors.toList());
+        return definitionList.stream()
+                .map(this::createDagGraph)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -61,8 +64,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
     }
 
     protected DagGraph createDagGraph(GraphDefinition graphDefinition) {
-        // TODO: 2023/11/20 check Graph definition
-
+        definitionValidator.checkGraphDefinition(graphDefinition);
         DagGraphBuilder dagGraphBuilder = new DagGraphBuilder()
                 .graphName(graphDefinition.getGraphName())
                 .timeout(graphDefinition.getTimeout())
