@@ -1,5 +1,6 @@
-graphName: "userGraph"
+graphName: "org.gloryjie.scheduler.example.user.UserContext"
 timeout: 1000
+contextClass: "org.gloryjie.scheduler.example.user.UserContext"
 nodes:
   - nodeName: "userInfo"
     timeout: 500
@@ -18,6 +19,9 @@ nodes:
   - nodeName: "courseScoreList"
     timeout: 500
     dependsOn: [ "courseList" ]
+    dependsOnType:
+      SOFT:
+        - "userInfo"
     handler: "getCourseScoreList"
     retFieldName: "courseScoreList"
     paramConverter: "uidAndCourseIdList"
