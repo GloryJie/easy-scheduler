@@ -75,6 +75,11 @@ public class DefaultDagGraph implements DagGraph {
     }
 
     @Override
+    public Long timeout() {
+        return this.timeout;
+    }
+
+    @Override
     public List<DagNode<?>> getSuccessorNodes(String nodeName) {
         // The node's successor reads from the Graph instead of the dagNode
         // because the dagNode dependency could be modified by the outside

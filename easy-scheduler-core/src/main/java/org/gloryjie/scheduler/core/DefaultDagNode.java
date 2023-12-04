@@ -85,6 +85,10 @@ public class DefaultDagNode<T> implements DagNode<T> {
         attributeMap.remove(key);
     }
 
+    @Override
+    public Long timeout() {
+        return this.timeout != null && this.timeout > 0 ? this.timeout : handler.timeout();
+    }
 
     public static <T> Builder<T> builder() {
         return new Builder<>();
