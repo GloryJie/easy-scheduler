@@ -209,11 +209,8 @@ public class ConcurrentDagEngine implements DagEngine {
             if (curNode == dagGraph.getEndNode() || CollectionUtils.isEmpty(successorNodes)) {
                 dagDone(DagState.SUCCEED, null);
             } else {
-
-                // Decrement the in-degree of the successor nodes
-                decrementSuccessorInDegree(successorNodes);
-
-                checkAndFireSuccessorNodes(successorNodes);
+                // Decrement the in-degree of successor nodes and fire them
+                decrementIndegreeAndFireSuccessorNodes(successorNodes);
             }
         }
 
@@ -223,7 +220,7 @@ public class ConcurrentDagEngine implements DagEngine {
             }
         }
 
-        private void checkAndFireSuccessorNodes(List<DagNode<?>> successorNodes) {
+        private void decrementIndegreeAndFireSuccessorNodes(List<DagNode<?>> successorNodes) {
             if (dagStateRef.get() != DagState.RUNNING) {
                 return;
             }
@@ -233,7 +230,7 @@ public class ConcurrentDagEngine implements DagEngine {
                 NodeState nodeState = nodeStateMap.get(nodeName);
                 // Check if the node is in the waiting state and the in-degree is 0
                 if (nodeState == NodeState.WAITING) {
-                    int inDegree = nodeInDegreeInfo.get(nodeName).get();
+                    int inDegree = nodeInDegreeInfo.get(successorNode.getNodeName()).decrementAndGet();
                     if (inDegree == 0) {
                         fireNode(successorNode);
                     } else if (inDegree < 0) {
@@ -264,7 +261,7 @@ public class ConcurrentDagEngine implements DagEngine {
                 // Asynchronously execute the node
                 nodeFuture =
                         CompletableFuture.supplyAsync(() -> {
-                            // // Check the DAG and node state before executing
+                            // Check the DAG and node state before executing
                             if (dagStateRef.get() != DagState.RUNNING
                                     || nodeStateMap.get(node.getNodeName()) != NodeState.WAITING) {
                                 return null;
@@ -319,22 +316,21 @@ public class ConcurrentDagEngine implements DagEngine {
             NodeHandler<?> handler = node.getHandler();
             if (handler == null) {
                 nodeResult.setState(NodeState.SUCCEEDED);
-                return;
-            }
-            try {
-                boolean evaluateResult = handler.evaluate(node, dagContext);
+            } else {
+                try {
+                    boolean evaluateResult = handler.evaluate(node, dagContext);
 
-                if (evaluateResult) {
-                    Object result = handler.execute(node, dagContext);
-                    nodeResult.setResult(result);
+                    if (evaluateResult) {
+                        Object result = handler.execute(node, dagContext);
+                        nodeResult.setResult(result);
+                    }
+
+                    nodeResult.setState(NodeState.SUCCEEDED);
+                } catch (Exception e) {
+                    nodeResult.setThrowable(e);
+                    nodeResult.setState(NodeState.FAILED);
                 }
-
-                nodeResult.setState(NodeState.SUCCEEDED);
-            } catch (Exception e) {
-                nodeResult.setThrowable(e);
-                nodeResult.setState(NodeState.FAILED);
             }
-
             nodeResult.setEndTime(System.currentTimeMillis());
         }
 
