@@ -214,12 +214,6 @@ public class ConcurrentDagEngine implements DagEngine {
             }
         }
 
-        private void decrementSuccessorInDegree(List<DagNode<?>> successorNodes) {
-            for (DagNode<?> successorNode : successorNodes) {
-                nodeInDegreeInfo.get(successorNode.getNodeName()).decrementAndGet();
-            }
-        }
-
         private void decrementIndegreeAndFireSuccessorNodes(List<DagNode<?>> successorNodes) {
             if (dagStateRef.get() != DagState.RUNNING) {
                 return;
