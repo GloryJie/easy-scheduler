@@ -1,8 +1,6 @@
 package org.gloryjie.scheduler.auto;
 
-import org.gloryjie.scheduler.api.DagEngine;
 import org.gloryjie.scheduler.api.ExecutorSelector;
-import org.gloryjie.scheduler.core.ConcurrentDagEngine;
 import org.gloryjie.scheduler.core.SingleExcutorSelector;
 import org.gloryjie.scheduler.dynamic.DefaultDynamicDagEngine;
 import org.gloryjie.scheduler.dynamic.DynamicDagEngine;
@@ -23,15 +21,8 @@ public class EasySchedulerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DynamicDagEngine dynamicDagEngine(DagGraphFactory dagGraphFactory,
-                                             DagEngine dagEngine) {
-        return new DefaultDynamicDagEngine(dagGraphFactory, dagEngine);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ConcurrentDagEngine concurrentDagEngine(ExecutorSelector executorSelector) {
-        return new ConcurrentDagEngine(executorSelector);
+    public DynamicDagEngine dynamicDagEngine(DagGraphFactory dagGraphFactory, ExecutorSelector executorSelector) {
+        return new DefaultDynamicDagEngine(executorSelector, dagGraphFactory);
     }
 
 

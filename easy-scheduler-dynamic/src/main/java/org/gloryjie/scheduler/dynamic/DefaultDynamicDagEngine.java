@@ -4,10 +4,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.gloryjie.scheduler.api.DagEngine;
 import org.gloryjie.scheduler.api.DagGraph;
 import org.gloryjie.scheduler.api.DagResult;
+import org.gloryjie.scheduler.api.ExecutorSelector;
 import org.gloryjie.scheduler.api.NodeHandler;
+import org.gloryjie.scheduler.core.ConcurrentDagEngine;
 import org.gloryjie.scheduler.core.DagEngineException;
 import org.gloryjie.scheduler.reader.DagGraphFactory;
 import org.gloryjie.scheduler.reader.annotation.GraphClass;
@@ -25,35 +26,27 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class DefaultDynamicDagEngine implements DynamicDagEngine {
+public class DefaultDynamicDagEngine extends ConcurrentDagEngine implements DynamicDagEngine {
 
     private DagGraphFactory dagGraphFactory;
 
-    private DagEngine dagEngine;
-
     private final ConcurrentHashMap<String, DagGraph> graphMap = new ConcurrentHashMap<>();
 
-
-    public DefaultDynamicDagEngine(DagGraphFactory dagGraphFactory, DagEngine dagEngine) {
+    public DefaultDynamicDagEngine(DagGraphFactory dagGraphFactory) {
+        super();
         this.dagGraphFactory = dagGraphFactory;
-        this.dagEngine = dagEngine;
     }
 
-    @Override
-    public DagResult fire(DagGraph dagGraph, Object context) {
-        return dagEngine.fire(dagGraph, context);
-    }
-
-    @Override
-    public DagResult fire(DagGraph dagGraph, Object context, Long timeout) {
-        return dagEngine.fire(dagGraph, context, timeout);
+    public DefaultDynamicDagEngine(ExecutorSelector executorSelector, DagGraphFactory dagGraphFactory) {
+        super(executorSelector);
+        this.dagGraphFactory = dagGraphFactory;
     }
 
 
     @Override
     public DagResult fireContext(Object context) {
         DagGraph dagGraph = createAndCacheGraph(context.getClass());
-        return dagEngine.fire(dagGraph, context, dagGraph.timeout());
+        return this.fire(dagGraph, context, dagGraph.timeout());
     }
 
     @Override

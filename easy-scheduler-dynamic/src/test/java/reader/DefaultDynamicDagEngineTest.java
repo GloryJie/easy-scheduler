@@ -2,7 +2,6 @@ package reader;
 
 import com.google.common.collect.Lists;
 import org.gloryjie.scheduler.api.*;
-import org.gloryjie.scheduler.core.ConcurrentDagEngine;
 import org.gloryjie.scheduler.core.DagEngineException;
 import org.gloryjie.scheduler.dynamic.DefaultDynamicDagEngine;
 import org.gloryjie.scheduler.dynamic.DynamicDagEngine;
@@ -32,7 +31,7 @@ public class DefaultDynamicDagEngineTest {
         }
     };
 
-    private DynamicDagEngine dynamicDagEngine = new DefaultDynamicDagEngine(graphFactory, new ConcurrentDagEngine());
+    private DynamicDagEngine dynamicDagEngine = new DefaultDynamicDagEngine(graphFactory);
 
 
     @Test

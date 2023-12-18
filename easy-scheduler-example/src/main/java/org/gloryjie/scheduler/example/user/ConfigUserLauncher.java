@@ -19,7 +19,7 @@ public class ConfigUserLauncher {
     public static void main(String[] args) throws Exception {
         SpelGraphFactory spelGraphFactory = new SpelGraphFactory();
         ConcurrentDagEngine concurrentDagEngine = new ConcurrentDagEngine();
-        DynamicDagEngine dynamicDagEngine = new DefaultDynamicDagEngine(spelGraphFactory, concurrentDagEngine);
+        DynamicDagEngine dynamicDagEngine = new DefaultDynamicDagEngine(spelGraphFactory);
 
         UserService userService = new UserService();
         // Auto convert the UserService's method as handler and register in the dynamicDagEngine

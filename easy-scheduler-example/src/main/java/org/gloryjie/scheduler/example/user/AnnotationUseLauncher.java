@@ -13,7 +13,7 @@ public class AnnotationUseLauncher {
 
         SpelGraphFactory spelGraphFactory = new SpelGraphFactory();
         ConcurrentDagEngine concurrentDagEngine = new ConcurrentDagEngine();
-        DynamicDagEngine dagEngine = new DefaultDynamicDagEngine(spelGraphFactory, concurrentDagEngine);
+        DynamicDagEngine dagEngine = new DefaultDynamicDagEngine(spelGraphFactory);
 
         UserService userService = new UserService();
         // Auto convert the UserService's method as handler and register in the dagEngine
