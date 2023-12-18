@@ -65,7 +65,7 @@ public class ConcurrentDagEngine implements DagEngine {
             NodeResultImpl<Object> nodeResult,
             CompletableFuture<NodeResultImpl<Object>> future
     ) {
-        if (dagNode.timeout() == null || dagNode.timeout() <= 0) {
+        if (dagNode.timeout() == null || dagNode.timeout() <= 0 || future.isDone()) {
             return future;
         }
 
