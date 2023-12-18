@@ -13,6 +13,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Slf4j
 public class ConcurrentDagEngine implements DagEngine {
@@ -38,7 +39,10 @@ public class ConcurrentDagEngine implements DagEngine {
 
     @Override
     public DagResult fire(DagGraph dagGraph, Object context, Long timeout) {
-        ExecutorService executorService = executorSelector.select(dagGraph.getGraphName());
+        ExecutorService executorService = null;
+        if (executorSelector != null) {
+            executorService = executorSelector.select(dagGraph.getGraphName());
+        }
         ConcurrentDagContext dagContext = new ConcurrentDagContext(context);
         DagExecutor dagExecutor = new DagExecutor(executorService, dagGraph, dagContext, timeout);
         dagExecutor.start();
@@ -243,45 +247,24 @@ public class ConcurrentDagEngine implements DagEngine {
         }
 
         private void fireNode(DagNode<?> node) {
-            NodeResultImpl<Object> nodeResult = new NodeResultImpl<>(node.getNodeName());
-            nodeResult.setSubmitTime(System.currentTimeMillis());
 
-            CompletableFuture<NodeResultImpl<Object>> nodeFuture = null;
-            if (node.getHandler() == null) {
-                nodeStateMap.put(node.getNodeName(), NodeState.RUNNING);
-                executeNode(node, nodeResult);
-                nodeFuture = CompletableFuture.completedFuture(nodeResult);
-            } else {
-                // Asynchronously execute the node
-                nodeFuture =
-                        CompletableFuture.supplyAsync(() -> {
-                            // Check the DAG and node state before executing
-                            if (dagStateRef.get() != DagState.RUNNING
-                                    || nodeStateMap.get(node.getNodeName()) != NodeState.WAITING) {
-                                return null;
-                            }
-                            nodeStateMap.put(node.getNodeName(), NodeState.RUNNING);
-
-                            executeNode(node, nodeResult);
-
-                            return nodeResult;
-                        }, executorService);
-                // Submit the node timeout future
-                nodeFuture = ConcurrentDagEngine.this.wrapNodeFutureWithTimeout(node, nodeResult, nodeFuture);
-            }
+            CompletableFuture<NodeResultImpl<Object>> nodeFuture = getNodeExecuteFuture(node);
 
             nodeFuture.thenAccept(curResult -> {
                         // Check the DAG and node state before executing
                         if (curResult == null
                                 || dagStateRef.get() != DagState.RUNNING
-                                || nodeStateMap.get(nodeResult.getNodeName()) != NodeState.RUNNING) {
+                                || nodeStateMap.get(curResult.getNodeName()) != NodeState.RUNNING) {
                             return;
                         }
+                        // handle cur node execute result
                         handleNodeExecuteResult(node, curResult);
 
-                        // cur node execute succeeded, fire successor nodes
-                        fireNextNode(node, curResult);
+                        // check timeout
+                        checkGraphExecuteTimeout();
 
+                        // fire successor nodes
+                        fireNextNode(node, curResult);
                     })
                     .exceptionally(e -> {
                         // Throw a DagEngineException if an unknown exception occurs during execution
@@ -290,6 +273,52 @@ public class ConcurrentDagEngine implements DagEngine {
                         dagDone(DagState.FAILED, new DagEngineException("unknown exception happened: " + e.getMessage(), e));
                         return null;
                     });
+        }
+
+        private void checkGraphExecuteTimeout() {
+            long now = System.currentTimeMillis();
+            if (timeout != null && timeout > 0 && (timeout < now - startTime)) {
+                TimeoutException timeoutException = new TimeoutException(
+                        String.format("Dag[graphName=%s] timeout expected: %s ms, cost: %s ms",
+                                dagGraph.getGraphName(), timeout, now - startTime));
+                dagDone(DagState.TIMEOUT, timeoutException);
+            }
+        }
+
+
+        private CompletableFuture<NodeResultImpl<Object>> getNodeExecuteFuture(DagNode node) {
+            CompletableFuture<NodeResultImpl<Object>> nodeFuture = null;
+
+            NodeResultImpl<Object> nodeResult = new NodeResultImpl<>(node.getNodeName());
+            nodeResult.setSubmitTime(System.currentTimeMillis());
+
+            Supplier<NodeResultImpl<Object>> supplier = nodeExecuteResultSupplier(node, nodeResult);
+
+            // Execute the node
+            if (node.getHandler() == null || executorService == null) {
+                nodeFuture = CompletableFuture.completedFuture(supplier.get());
+            } else {
+                nodeFuture = CompletableFuture.supplyAsync(supplier, executorService);
+                // Submit the node timeout future
+                nodeFuture = wrapNodeFutureWithTimeout(node, nodeResult, nodeFuture);
+            }
+            return nodeFuture;
+        }
+
+        @SuppressWarnings("all")
+        private Supplier<NodeResultImpl<Object>> nodeExecuteResultSupplier(DagNode node, NodeResultImpl nodeResult) {
+            return () -> {
+                // Check the DAG and node state before executing
+                if (dagStateRef.get() != DagState.RUNNING
+                        || nodeStateMap.get(node.getNodeName()) != NodeState.WAITING) {
+                    return null;
+                }
+                nodeStateMap.put(node.getNodeName(), NodeState.RUNNING);
+
+                executeNode(node, nodeResult);
+
+                return nodeResult;
+            };
         }
 
         public void handleNodeExecuteResult(DagNode<?> node, NodeResultImpl<Object> nodeResult) {
@@ -303,7 +332,7 @@ public class ConcurrentDagEngine implements DagEngine {
 
         @SuppressWarnings("all")
         public void executeNode(DagNode node, NodeResultImpl<Object> nodeResult) {
-
+            // init node
             nodeResult.setStartTime(System.currentTimeMillis());
             nodeResult.setState(NodeState.RUNNING);
 
@@ -313,12 +342,10 @@ public class ConcurrentDagEngine implements DagEngine {
             } else {
                 try {
                     boolean evaluateResult = handler.evaluate(node, dagContext);
-
                     if (evaluateResult) {
                         Object result = handler.execute(node, dagContext);
                         nodeResult.setResult(result);
                     }
-
                     nodeResult.setState(NodeState.SUCCEEDED);
                 } catch (Exception e) {
                     nodeResult.setThrowable(e);
