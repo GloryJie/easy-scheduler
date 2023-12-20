@@ -240,9 +240,13 @@ public class ConcurrentDagEngine implements DagEngine {
         }
 
         private void dagDone(DagState state, Throwable throwable) {
-            this.throwable = throwable;
-            this.endTime = System.currentTimeMillis();
-            this.dagStateRef.set(state);
+            // Update the state, throwable, and endTime only if the current state is RUNNING
+            if (this.dagStateRef.compareAndSet(DagState.RUNNING, state)) {
+                this.throwable = throwable;
+                this.endTime = System.currentTimeMillis();
+            }
+
+            // Ignore the result of compareAndSet and wake up the invoking thread
             this.countDownLatch.countDown();
         }
 
