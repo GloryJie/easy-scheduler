@@ -3,7 +3,6 @@ package org.gloryjie.scheduler.core;
 import org.gloryjie.scheduler.api.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
@@ -13,11 +12,10 @@ import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DagEngineTest {
+public class DagEngineTest extends DagEngineProvide {
 
     /**
      * test one node succeeded
@@ -33,7 +31,7 @@ public class DagEngineTest {
         }));
 
         DagResult fireResult = dagEngine.fire(dagGraph, "testContext");
-
+        System.out.println(fireResult);
         assertTrue(fireResult.isDone());
         assertSame(DagState.SUCCEED, fireResult.getState());
         assertNull(fireResult.getThrowable());
@@ -209,13 +207,5 @@ public class DagEngineTest {
             throw new RuntimeException(e);
         }
 
-    }
-
-
-    static Stream<Arguments> dagEngineProvider() {
-        return Stream.of(
-                Arguments.of(new ConcurrentDagEngine()),
-                Arguments.of(new SingleThreadDagEngine())
-        );
     }
 }

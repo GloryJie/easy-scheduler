@@ -2,10 +2,12 @@ package org.gloryjie.scheduler.core;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.gloryjie.scheduler.api.*;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,12 @@ public class ConcurrentDagEngine implements DagEngine {
             });
     private final ExecutorSelector executorSelector;
 
+    private final List<DagNodeFilter> dagNodeFilters = new CopyOnWriteArrayList<>();
+
+    private DagNodeInvoker dagNodeInvoker;
+
+    private DagNodeInvoker rawDagNodeInvoker;
+
 
     public ConcurrentDagEngine() {
         this(new SingleExcutorSelector(Runtime.getRuntime().availableProcessors()));
@@ -34,6 +42,8 @@ public class ConcurrentDagEngine implements DagEngine {
 
     public ConcurrentDagEngine(ExecutorSelector executorSelector) {
         this.executorSelector = executorSelector;
+        this.rawDagNodeInvoker = new RawDagNodeInvoker();
+        this.dagNodeInvoker = rawDagNodeInvoker;
     }
 
 
@@ -47,6 +57,18 @@ public class ConcurrentDagEngine implements DagEngine {
         DagExecutor dagExecutor = new DagExecutor(executorService, dagGraph, dagContext, timeout);
         dagExecutor.start();
         return dagExecutor;
+    }
+
+    @Override
+    public synchronized void registerFilter(DagNodeFilter filter) {
+        dagNodeFilters.add(filter);
+        dagNodeFilters.sort(Comparator.comparing(DagNodeFilter::getOrder));
+        DagNodeInvoker nodeInvoker = rawDagNodeInvoker;
+
+        for (DagNodeFilter dagNodeFilter : dagNodeFilters) {
+            nodeInvoker = new DagNodeFilterInvoker(nodeInvoker, dagNodeFilter);
+        }
+        this.dagNodeInvoker = nodeInvoker;
     }
 
 
@@ -87,6 +109,7 @@ public class ConcurrentDagEngine implements DagEngine {
 
     @Getter
     @Setter
+    @ToString
     private static class NodeResultImpl<T> implements NodeResult<T> {
 
         private final String nodeName;
@@ -129,12 +152,16 @@ public class ConcurrentDagEngine implements DagEngine {
     }
 
 
+    @ToString(onlyExplicitlyIncluded = true)
     private class DagExecutor implements DagResult {
 
         private final ExecutorService executorService;
         private final DagGraph dagGraph;
+        @ToString.Include
         private final DagContext dagContext;
+        @ToString.Include
         private final Map<String, AtomicInteger> nodeInDegreeInfo;
+        @ToString.Include
         private final Long timeout;
 
 
@@ -143,9 +170,13 @@ public class ConcurrentDagEngine implements DagEngine {
          */
         private final CountDownLatch countDownLatch;
         private final AtomicReference<DagState> dagStateRef = new AtomicReference<>(DagState.WAITING);
+        @ToString.Include
         private final ConcurrentHashMap<String, NodeState> nodeStateMap;
+        @ToString.Include
         private volatile Throwable throwable;
+        @ToString.Include
         private volatile long startTime;
+        @ToString.Include
         private volatile long endTime;
 
         public DagExecutor(ExecutorService executorService, DagGraph dagGraph, DagContext dagContext, Long timeout) {
@@ -340,22 +371,16 @@ public class ConcurrentDagEngine implements DagEngine {
             nodeResult.setStartTime(System.currentTimeMillis());
             nodeResult.setState(NodeState.RUNNING);
 
-            NodeHandler<?> handler = node.getHandler();
-            if (handler == null) {
+            DagNodeInvoker invoker = dagNodeInvoker;
+            try {
+                Object result = invoker.invoke(node, dagContext);
+                nodeResult.setResult(result);
                 nodeResult.setState(NodeState.SUCCEEDED);
-            } else {
-                try {
-                    boolean evaluateResult = handler.evaluate(node, dagContext);
-                    if (evaluateResult) {
-                        Object result = handler.execute(node, dagContext);
-                        nodeResult.setResult(result);
-                    }
-                    nodeResult.setState(NodeState.SUCCEEDED);
-                } catch (Exception e) {
-                    nodeResult.setThrowable(e);
-                    nodeResult.setState(NodeState.FAILED);
-                }
+            } catch (Exception e) {
+                nodeResult.setThrowable(e);
+                nodeResult.setState(NodeState.FAILED);
             }
+
             nodeResult.setEndTime(System.currentTimeMillis());
         }
 
@@ -378,6 +403,43 @@ public class ConcurrentDagEngine implements DagEngine {
         @Override
         public Long getCostTime() {
             return endTime - startTime;
+        }
+    }
+
+
+    @SuppressWarnings({"all"})
+    static class RawDagNodeInvoker implements DagNodeInvoker {
+
+        @Override
+        public Object invoke(DagNode node, DagContext dagContext) {
+            NodeHandler handler = node.getHandler();
+            Object result = null;
+            if (handler != null) {
+                boolean evaluateResult = handler.evaluate(node, dagContext);
+                if (evaluateResult) {
+                    result = handler.execute(node, dagContext);
+                }
+            }
+            return result;
+        }
+
+    }
+
+    @SuppressWarnings({"raw"})
+    static class DagNodeFilterInvoker implements DagNodeInvoker {
+
+        private final DagNodeInvoker dagNodeInvoker;
+
+        private final DagNodeFilter dagNodeFilter;
+
+        public DagNodeFilterInvoker(DagNodeInvoker dagNodeInvoker, DagNodeFilter dagNodeFilter) {
+            this.dagNodeInvoker = dagNodeInvoker;
+            this.dagNodeFilter = dagNodeFilter;
+        }
+
+        @Override
+        public Object invoke(DagNode node, DagContext dagContext) {
+            return dagNodeFilter.invoke(dagNodeInvoker, node, dagContext);
         }
     }
 

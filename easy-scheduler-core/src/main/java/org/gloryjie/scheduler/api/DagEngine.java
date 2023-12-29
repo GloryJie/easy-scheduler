@@ -1,7 +1,5 @@
 package org.gloryjie.scheduler.api;
 
-import java.util.concurrent.TimeUnit;
-
 public interface DagEngine {
 
     /**
@@ -25,5 +23,8 @@ public interface DagEngine {
      * @return the result of scheduling the DAG node
      */
     DagResult fire(DagGraph dagGraph, Object context, Long timeout);
+
+
+    void registerFilter(DagNodeFilter filter);
 
 }

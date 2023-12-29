@@ -1,5 +1,6 @@
 package org.gloryjie.scheduler.core;
 
+import lombok.ToString;
 import org.gloryjie.scheduler.api.DagContext;
 
 import java.util.HashMap;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+@ToString
 public class ConcurrentDagContext implements DagContext {
 
     private final ConcurrentHashMap<String, Object> concurrentHashMap = new ConcurrentHashMap<>();
