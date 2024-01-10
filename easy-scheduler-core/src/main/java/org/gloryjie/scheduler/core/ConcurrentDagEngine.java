@@ -257,7 +257,7 @@ public class ConcurrentDagEngine implements DagEngine {
             for (DagNode<?> successorNode : successorNodes) {
                 String nodeName = successorNode.getNodeName();
                 NodeState nodeState = nodeStateMap.get(nodeName);
-                // Check if the node is in the waiting state and the in-degree is 0
+                // Check if the node is in the wai ting state and the in-degree is 0
                 if (nodeState == NodeState.WAITING) {
                     int inDegree = nodeInDegreeInfo.get(successorNode.getNodeName()).decrementAndGet();
                     if (inDegree == 0) {

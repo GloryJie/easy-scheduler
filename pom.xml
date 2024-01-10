@@ -15,6 +15,7 @@
         <module>easy-scheduler-dynamic</module>
         <module>easy-scheduler-spring-boot-starter</module>
         <module>easy-scheduler-example</module>
+        <module>easy-scheduler-resilience4j</module>
     </modules>
 
     <properties>
@@ -31,6 +32,7 @@
         <commons-io.version>2.15.0</commons-io.version>
         <spring.version>5.3.4</spring.version>
         <springboot-starter.version>2.4.3</springboot-starter.version>
+        <resilience4j-circuitbreaker.version>1.7.1</resilience4j-circuitbreaker.version>
     </properties>
 
 
@@ -132,6 +134,12 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-autoconfigure</artifactId>
                 <version>${springboot-starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-circuitbreaker</artifactId>
+                <version>${resilience4j-circuitbreaker.version}</version>
             </dependency>
 
 
