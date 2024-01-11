@@ -15,10 +15,10 @@ public class UserInfoContext {
 
     private Integer uid;
 
-    @GraphNode(handler = "getUserSimpleInfoHandler", dependsOn = {"uid"})
+    @GraphNode(handler = "getUserSimpleInfoHandler")
     private UserInfo userInfo;
 
-    @GraphNode(handler = "getUserCourseListHandler", dependsOn = "uid")
+    @GraphNode(handler = "getUserCourseListHandler")
     private List<String> courseList;
 
     @GraphNode(handler = "getUserCourseScoreHandler", dependsOn = "courseList")
@@ -27,7 +27,7 @@ public class UserInfoContext {
     @GraphNode(handler = "sayHelloNodeHandler")
     private String sayWord;
 
-    @GraphNode(actions = "#{context.userInfo2 = @userService.getUserSimpleInfoHandler(context.uid)}", dependsOn = {"uid"})
+    @GraphNode(actions = "#{context.userInfo2 = @userService.getUserSimpleInfoHandler(context.uid)}")
     private UserInfo userInfo2;
 
     @Data

@@ -1,10 +1,14 @@
 package org.gloryjie.scheduler.auto;
 
 
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import org.gloryjie.scheduler.api.DagNodeFilter;
 import org.gloryjie.scheduler.api.DagResult;
 import org.gloryjie.scheduler.api.DagState;
 import org.gloryjie.scheduler.auto.context.UserInfoContext;
 import org.gloryjie.scheduler.dynamic.DynamicDagEngine;
+import org.gloryjie.scheduler.resilience4j.DagNodeCircuitBreakerFilter;
+import org.gloryjie.scheduler.resilience4j.HandlerCircuitBreakerFilter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -41,6 +45,21 @@ public class MySpringApp {
     @Bean
     public UserService userService() {
         return new UserService();
+    }
+
+    @Bean
+    public CircuitBreakerRegistry circuitBreakerRegistry() {
+        return CircuitBreakerRegistry.ofDefaults();
+    }
+
+    @Bean
+    public DagNodeFilter dagNodeCircuitBreakerFilter(CircuitBreakerRegistry circuitBreakerRegistry) {
+        return new DagNodeCircuitBreakerFilter(circuitBreakerRegistry);
+    }
+
+    @Bean
+    public DagNodeFilter handlerCircuitBreakerFilter(CircuitBreakerRegistry circuitBreakerRegistry) {
+        return new HandlerCircuitBreakerFilter(circuitBreakerRegistry);
     }
 
 }

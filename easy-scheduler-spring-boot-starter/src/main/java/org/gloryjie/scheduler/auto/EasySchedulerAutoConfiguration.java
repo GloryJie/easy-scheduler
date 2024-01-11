@@ -48,8 +48,8 @@ public class EasySchedulerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public HandlerAndGraphProcessor handlerAndGraphProcessor(EasySchedulerConfig easySchedulerConfig) {
-        return new HandlerAndGraphProcessor(easySchedulerConfig);
+    public EasySchedulerBootProcessor handlerAndGraphProcessor(EasySchedulerConfig easySchedulerConfig) {
+        return new EasySchedulerBootProcessor(easySchedulerConfig);
     }
 
 }

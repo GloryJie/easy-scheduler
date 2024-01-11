@@ -51,6 +51,12 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.gloryjie.demo</groupId>
+            <artifactId>easy-scheduler-resilience4j</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
 
     </dependencies>
 

@@ -3,6 +3,7 @@ package org.gloryjie.scheduler.auto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.gloryjie.scheduler.api.DagNodeFilter;
 import org.gloryjie.scheduler.api.NodeHandler;
 import org.gloryjie.scheduler.core.DagEngineException;
 import org.gloryjie.scheduler.dynamic.DynamicDagEngine;
@@ -28,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Slf4j
-public class HandlerAndGraphProcessor implements SmartInitializingSingleton,
+public class EasySchedulerBootProcessor implements SmartInitializingSingleton,
         ApplicationContextAware {
 
     private ApplicationContext applicationContext;
@@ -37,7 +38,7 @@ public class HandlerAndGraphProcessor implements SmartInitializingSingleton,
 
     private EasySchedulerConfig easySchedulerConfig;
 
-    public HandlerAndGraphProcessor(EasySchedulerConfig easySchedulerConfig) {
+    public EasySchedulerBootProcessor(EasySchedulerConfig easySchedulerConfig) {
         this.easySchedulerConfig = easySchedulerConfig;
     }
 
@@ -46,6 +47,9 @@ public class HandlerAndGraphProcessor implements SmartInitializingSingleton,
         if (CollectionUtils.isEmpty(dynamicDagEngineList)) {
             return;
         }
+        // Register all dag node filter
+        registerDagNodeFilter();
+
         // Register all impl node handlers
         registerImplNodeHandlerBean();
 
@@ -55,6 +59,16 @@ public class HandlerAndGraphProcessor implements SmartInitializingSingleton,
         // Register all annotation graphs
         registerAnnotationGraph();
 
+    }
+
+    private void registerDagNodeFilter() {
+        Map<String, DagNodeFilter> beansOfType = applicationContext.getBeansOfType(DagNodeFilter.class, false, false);
+        for (DagNodeFilter nodeFilter : beansOfType.values()) {
+            for (DynamicDagEngine dynamicDagEngine : dynamicDagEngineList) {
+                dynamicDagEngine.registerFilter(nodeFilter);
+            }
+            log.info("[Easy-Scheduler]register dag node filter: {}", nodeFilter.getClass());
+        }
     }
 
     private void registerImplNodeHandlerBean() {
