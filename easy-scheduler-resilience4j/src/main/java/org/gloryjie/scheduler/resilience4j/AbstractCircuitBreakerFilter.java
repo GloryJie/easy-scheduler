@@ -17,18 +17,18 @@ public abstract class AbstractCircuitBreakerFilter implements DagNodeFilter {
     }
 
     @Override
-    public Object invoke(DagNodeInvoker dagNodeInvoker, DagNode node, DagContext dagContext) {
+    public void invoke(DagNodeInvoker dagNodeInvoker, DagNode node, DagContext dagContext) {
         if (circuitBreakerRegistry == null) {
-            return dagNodeInvoker.invoke(node, dagContext);
+            dagNodeInvoker.invoke(node, dagContext);
         }
         CircuitBreaker ciruitBreaker = this.findCiruitBreaker(node, dagContext);
         if (ciruitBreaker == null) {
-            return dagNodeInvoker.invoke(node, dagContext);
+            dagNodeInvoker.invoke(node, dagContext);
         }
 
 
         try {
-            return ciruitBreaker.executeCallable(() -> dagNodeInvoker.invoke(node, dagContext));
+            ciruitBreaker.executeRunnable(() -> dagNodeInvoker.invoke(node, dagContext));
         } catch (Exception e) {
             if (e instanceof RuntimeException) {
                 throw (RuntimeException) e;

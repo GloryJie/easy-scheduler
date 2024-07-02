@@ -22,13 +22,12 @@ public class DagGraphBuilderTest {
      */
     @Test
     public void oneNodeGraphTest() {
-        NodeHandler<String> printHandler = DefaultNodeHandler.<String>builder()
+        NodeHandler printHandler = DefaultNodeHandler.builder()
                 .handlerName("A")
                 .when(pairs -> pairs.getContext() != null)
-                .action(pairs -> "hello world")
                 .build();
 
-        DagNode<String> dagNodeA = DefaultDagNode.<String>builder().nodeName("A").handler(printHandler).build();
+        DagNode dagNodeA = DefaultDagNode.builder().nodeName("A").handler(printHandler).build();
 
         DagGraph dagGraph = new DagGraphBuilder()
                 .graphName("test")
@@ -60,14 +59,13 @@ public class DagGraphBuilderTest {
      */
     @Test
     public void twoNodeGraphTest() {
-        NodeHandler<String> printHandler = DefaultNodeHandler.<String>builder()
+        NodeHandler printHandler = DefaultNodeHandler.builder()
                 .handlerName("A")
                 .when(pairs -> pairs.getContext() != null)
-                .action(pairs -> "hello world")
                 .build();
 
-        DagNode<String> dagNodeA = DefaultDagNode.<String>builder().nodeName("A").handler(printHandler).build();
-        DagNode<String> dagNodeB = DefaultDagNode.<String>builder().nodeName("B").handler(printHandler).build();
+        DagNode dagNodeA = DefaultDagNode.builder().nodeName("A").handler(printHandler).build();
+        DagNode dagNodeB = DefaultDagNode.builder().nodeName("B").handler(printHandler).build();
 
         DagGraph dagGraph = new DagGraphBuilder().graphName("test").addNodes(dagNodeA, dagNodeB).build();
 
@@ -85,7 +83,7 @@ public class DagGraphBuilderTest {
 
         assertNotNull(dagGraph.getSuccessorNodes(DagGraph.START_NODE_NAME));
 
-        List<String> startSuccessorNodes = dagGraph.getSuccessorNodes(DagGraph.START_NODE_NAME)
+        List startSuccessorNodes = dagGraph.getSuccessorNodes(DagGraph.START_NODE_NAME)
                 .stream().map(DagNode::getNodeName).collect(Collectors.toList());
         assertTrue(CollectionUtils.containsAll(startSuccessorNodes, Lists.newArrayList("A", "B")));
 
@@ -103,14 +101,13 @@ public class DagGraphBuilderTest {
      */
     @Test
     public void twoNodeGraphBTest() {
-        NodeHandler<String> printHandler = DefaultNodeHandler.<String>builder()
+        NodeHandler printHandler = DefaultNodeHandler.builder()
                 .handlerName("A")
                 .when(pairs -> pairs.getContext() != null)
-                .action(pairs -> "hello world")
                 .build();
 
-        DagNode<String> dagNodeA = DefaultDagNode.<String>builder().nodeName("A").handler(printHandler).build();
-        DagNode<String> dagNodeB = DefaultDagNode.<String>builder().nodeName("B")
+        DagNode dagNodeA = DefaultDagNode.builder().nodeName("A").handler(printHandler).build();
+        DagNode dagNodeB = DefaultDagNode.builder().nodeName("B")
                 .dependOn("A").handler(printHandler).build();
 
         DagGraph dagGraph = new DagGraphBuilder()
@@ -132,7 +129,7 @@ public class DagGraphBuilderTest {
 
         assertNotNull(dagGraph.getSuccessorNodes(DagGraph.START_NODE_NAME));
 
-        List<String> startSuccessorNodes = dagGraph.getSuccessorNodes(DagGraph.START_NODE_NAME)
+        List startSuccessorNodes = dagGraph.getSuccessorNodes(DagGraph.START_NODE_NAME)
                 .stream().map(DagNode::getNodeName).collect(Collectors.toList());
         assertTrue(CollectionUtils.containsAll(startSuccessorNodes, Lists.newArrayList("A")));
 
@@ -149,17 +146,16 @@ public class DagGraphBuilderTest {
      */
     @Test
     public void buildGraphWithCycleTest() {
-        NodeHandler<String> printHandler = DefaultNodeHandler.<String>builder()
+        NodeHandler printHandler = DefaultNodeHandler.builder()
                 .handlerName("printHandler")
                 .when(pairs -> pairs.getContext() != null)
-                .action(pairs -> "hello world")
                 .build();
 
         // A -> B
         // B -> A
-        DagNode<String> dagNodeA = DefaultDagNode.<String>builder()
+        DagNode dagNodeA = DefaultDagNode.builder()
                 .nodeName("A").handler(printHandler).dependOn("B").build();
-        DagNode<String> dagNodeB = DefaultDagNode.<String>builder()
+        DagNode dagNodeB = DefaultDagNode.builder()
                 .nodeName("B").dependOn("A").handler(printHandler).build();
 
         assertThrows(IllegalArgumentException.class,

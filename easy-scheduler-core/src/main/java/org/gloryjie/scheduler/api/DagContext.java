@@ -4,36 +4,11 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import javax.annotation.Nullable;
 import java.util.Map;
-import java.util.Objects;
 
 public interface DagContext {
 
-    String NODE_RESULT_PREFIX = "#NODE_RESULT#";
-
     String USER_CONTEXT = "#USER_CONTEXT#";
 
-    /**
-     * Retrieves the result of a node from the context.
-     *
-     * @param nodeName The name of the node. Must not be null.
-     * @return The result of the node.
-     */
-    default NodeResult<?> getNodeResult(String nodeName) {
-        Object value = this.get(NODE_RESULT_PREFIX + nodeName);
-        return value == null ? null : (NodeResult<?>) value;
-    }
-
-    /**
-     * Puts the node result into the context.
-     *
-     * @param nodeName The name of the node. Must not be null.
-     * @param result   The result of the node. Must not be null.
-     */
-    default void putNodeResult(String nodeName, NodeResult<?> result) {
-        Objects.requireNonNull(nodeName, "nodeName must not null");
-        Objects.requireNonNull(result, "nodeResult must not null");
-        this.put(NODE_RESULT_PREFIX + nodeName, result);
-    }
 
     /**
      * Retrieves the user context object.

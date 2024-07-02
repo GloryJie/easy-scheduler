@@ -11,12 +11,11 @@ public class DefaultNodeHandlerTest {
 
     @Test
     public void defaultNodeHandlerEvaluateTest() {
-        NodeHandler<Object> handler = DefaultNodeHandler.builder()
+        NodeHandler handler = DefaultNodeHandler.builder()
                 .handlerName("test")
                 .when(dagContext -> true)
                 .action(dagContext -> {
                     System.out.println("hello world: " + dagContext);
-                    return "hello";
                 }).build();
 
         DagContext dagContext = new MapDagContext(null);
@@ -34,7 +33,7 @@ public class DefaultNodeHandlerTest {
 
     @Test
     public void defaultNodeHandlerEvaluateExceptionTest() {
-        NodeHandler<Object> handler = DefaultNodeHandler.builder()
+        NodeHandler handler = DefaultNodeHandler.builder()
                 .handlerName("test")
                 .when(dagContext -> true)
                 .action(dagContext -> {

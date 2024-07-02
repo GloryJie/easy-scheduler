@@ -8,10 +8,10 @@ public interface HandlerRegistry {
 
 
     @Nullable
-    NodeHandler<Object> getHandler(String handlerName);
+    NodeHandler getHandler(String handlerName);
 
 
-    void registerHandler(NodeHandler<?> handler);
+    void registerHandler(NodeHandler handler);
 
 
 }

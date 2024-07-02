@@ -167,12 +167,12 @@ public class DefaultDynamicDagEngine extends ConcurrentDagEngine implements Dyna
 
     @Nullable
     @Override
-    public NodeHandler<Object> getHandler(String handlerName) {
+    public NodeHandler getHandler(String handlerName) {
         return dagGraphFactory.getHandler(handlerName);
     }
 
     @Override
-    public void registerHandler(NodeHandler<?> handler) {
+    public void registerHandler(NodeHandler handler) {
         dagGraphFactory.registerHandler(handler);
     }
 }

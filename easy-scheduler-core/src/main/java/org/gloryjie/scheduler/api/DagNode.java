@@ -3,12 +3,7 @@ package org.gloryjie.scheduler.api;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * dagNode describe
- *
- * @param <R>
- */
-public interface DagNode<R> {
+public interface DagNode {
 
     /**
      * Returns the name of the node.
@@ -22,7 +17,7 @@ public interface DagNode<R> {
      *
      * @return the handler for the node
      */
-    NodeHandler<R> getHandler();
+    NodeHandler getHandler();
 
     /**
      * Adds a dependency to the specified node.

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class DefaultDagGraph implements DagGraph {
 
     private final String graphName;
-    private final Map<String, DagNode<?>> dagNodeMap;
+    private final Map<String, DagNode> dagNodeMap;
     private ImmutableValueGraph<String, Integer> graph;
     private final Map<String, Integer> nodeInDegreeMap;
 
@@ -29,7 +29,7 @@ public class DefaultDagGraph implements DagGraph {
 
     public DefaultDagGraph(String graphName,
                            ImmutableValueGraph<String, Integer> graph,
-                           Map<String, DagNode<?>> dagNodeMap,
+                           Map<String, DagNode> dagNodeMap,
                            Long timeout) {
         Objects.requireNonNull(graphName, "graph name must not be null");
         Objects.requireNonNull(graph, "graph must not be null");
@@ -50,22 +50,22 @@ public class DefaultDagGraph implements DagGraph {
     }
 
     @Override
-    public List<DagNode<?>> nodes() {
+    public List<DagNode> nodes() {
         return new ArrayList<>(dagNodeMap.values());
     }
 
     @Override
-    public DagNode<?> getNode(String nodeName) {
+    public DagNode getNode(String nodeName) {
         return dagNodeMap.get(nodeName);
     }
 
     @Override
-    public DagNode<?> getEndNode() {
+    public DagNode getEndNode() {
         return dagNodeMap.get(DagGraph.END_NODE_NAME);
     }
 
     @Override
-    public DagNode<?> getStartNode() {
+    public DagNode getStartNode() {
         return dagNodeMap.get(DagGraph.START_NODE_NAME);
     }
 
@@ -80,7 +80,7 @@ public class DefaultDagGraph implements DagGraph {
     }
 
     @Override
-    public List<DagNode<?>> getSuccessorNodes(String nodeName) {
+    public List<DagNode> getSuccessorNodes(String nodeName) {
         // The node's successor reads from the Graph instead of the dagNode
         // because the dagNode dependency could be modified by the outside
         return graph.successors(nodeName).stream()

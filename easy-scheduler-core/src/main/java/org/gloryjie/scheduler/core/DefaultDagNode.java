@@ -9,10 +9,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ToString(exclude = {"handler"})
-public class DefaultDagNode<T> implements DagNode<T> {
+public class DefaultDagNode implements DagNode {
 
     private final String nodeName;
-    private final NodeHandler<T> handler;
+    private final NodeHandler handler;
 
     private final Map<String, DependencyType> dependencyMap = new ConcurrentHashMap<>();
 
@@ -21,7 +21,7 @@ public class DefaultDagNode<T> implements DagNode<T> {
     private final ConcurrentHashMap<String, Object> attributeMap = new ConcurrentHashMap<>();
 
 
-    public DefaultDagNode(String nodeName, NodeHandler<T> handler, Map<String, DependencyType> dependencyMap, Long timeout) {
+    public DefaultDagNode(String nodeName, NodeHandler handler, Map<String, DependencyType> dependencyMap, Long timeout) {
         Objects.requireNonNull(nodeName, "node name must not be null");
         this.nodeName = nodeName;
         this.handler = handler;
@@ -38,7 +38,7 @@ public class DefaultDagNode<T> implements DagNode<T> {
     }
 
     @Override
-    public NodeHandler<T> getHandler() {
+    public NodeHandler getHandler() {
         return this.handler;
     }
 
@@ -90,14 +90,14 @@ public class DefaultDagNode<T> implements DagNode<T> {
         return this.timeout != null && this.timeout > 0 ? this.timeout : handler.timeout();
     }
 
-    public static <T> Builder<T> builder() {
-        return new Builder<>();
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public static class Builder<T> {
+    public static class Builder {
 
         private String nodeName;
-        private NodeHandler<T> handler;
+        private NodeHandler handler;
         private final Map<String, DependencyType> dependTypeMap = new HashMap<>();
 
         private final Map<String, Object> attributes = new HashMap<>();
@@ -107,42 +107,42 @@ public class DefaultDagNode<T> implements DagNode<T> {
 
         }
 
-        public Builder<T> nodeName(String nodeName) {
+        public Builder nodeName(String nodeName) {
             this.nodeName = nodeName;
             return this;
         }
 
-        public Builder<T> handler(NodeHandler<T> handler) {
+        public Builder handler(NodeHandler handler) {
             this.handler = handler;
             return this;
         }
 
-        public Builder<T> dependOn(String... nodeNames) {
+        public Builder dependOn(String... nodeNames) {
             for (String name : nodeNames) {
                 this.dependTypeMap.put(name, DependencyType.STRONG);
             }
             return this;
         }
 
-        public Builder<T> dependOn(DependencyType dependencyType, String... nodeNames) {
+        public Builder dependOn(DependencyType dependencyType, String... nodeNames) {
             for (String name : nodeNames) {
                 this.dependTypeMap.put(name, dependencyType);
             }
             return this;
         }
 
-        public Builder<T> timeout(Long timeout) {
+        public Builder timeout(Long timeout) {
             this.timeout = timeout;
             return this;
         }
 
-        public Builder<T> attribute(String key, Object value) {
+        public Builder attribute(String key, Object value) {
             this.attributes.put(key, value);
             return this;
         }
 
-        public DagNode<T> build() {
-            DefaultDagNode<T> dagNode = new DefaultDagNode<>(nodeName, handler, dependTypeMap, timeout);
+        public DagNode build() {
+            DefaultDagNode dagNode = new DefaultDagNode(nodeName, handler, dependTypeMap, timeout);
             this.attributes.forEach(dagNode::setAttribute);
             return dagNode;
         }

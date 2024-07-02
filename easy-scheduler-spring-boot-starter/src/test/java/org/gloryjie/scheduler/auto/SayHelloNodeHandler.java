@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class SayHelloNodeHandler implements NodeHandler<String> {
+public class SayHelloNodeHandler implements NodeHandler {
 
 
     @Override
@@ -17,8 +17,7 @@ public class SayHelloNodeHandler implements NodeHandler<String> {
     }
 
     @Override
-    public String execute(DagNode<Object> dagNode, DagContext dagContext) {
+    public void execute(DagNode dagNode, DagContext dagContext) {
         log.info("SayHelloNodeHandler execute, node: " + dagNode.getNodeName());
-        return "hello";
     }
 }

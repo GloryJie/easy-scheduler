@@ -16,7 +16,6 @@ public class HelloLauncher {
                 .when(context -> context.getContext() != null)
                 .action((dagNode, dagContext) -> {
                     System.out.println("Hello: " + dagNode.getNodeName());
-                    return null;
                 }).build();
 
         DagNode dagNodeA = DefaultDagNode.builder().nodeName("A")

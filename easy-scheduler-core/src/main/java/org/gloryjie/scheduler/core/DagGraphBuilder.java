@@ -23,11 +23,11 @@ public class DagGraphBuilder {
      */
     private MutableValueGraph<String, Integer> mutableValueGraph;
 
-    private final Map<String, DagNode<?>> nodeMap;
+    private final Map<String, DagNode> nodeMap;
 
-    private DagNode<?> startNode;
+    private DagNode startNode;
 
-    private DagNode<?> endNode;
+    private DagNode endNode;
 
     private Long timeout;
 
@@ -53,14 +53,14 @@ public class DagGraphBuilder {
         return this;
     }
 
-    public DagGraphBuilder addNodes(DagNode<?>... dagNodes) {
+    public DagGraphBuilder addNodes(DagNode... dagNodes) {
         Objects.requireNonNull(dagNodes, "dagNodes must not be null");
         Arrays.stream(dagNodes).forEach(this::addNode);
         return this;
     }
 
 
-    public <T> DagGraphBuilder addNode(DagNode<T> dagNode) {
+    public <T> DagGraphBuilder addNode(DagNode dagNode) {
         Objects.requireNonNull(dagNode, "dagNode must not be null");
         Objects.requireNonNull(dagNode.getNodeName(), "dagNode name must not be null");
         if (nodeMap.containsKey(dagNode.getNodeName())) {
@@ -103,9 +103,9 @@ public class DagGraphBuilder {
 
 
     private void buildMutableValueGraph() {
-        for (Map.Entry<String, DagNode<?>> entry : nodeMap.entrySet()) {
+        for (Map.Entry<String, DagNode> entry : nodeMap.entrySet()) {
             String nodeName = entry.getKey();
-            DagNode<?> dagNode = entry.getValue();
+            DagNode dagNode = entry.getValue();
             Map<String, DependencyType> dependNodeTypeMap = dagNode.dependNodeTypeMap();
             Set<String> dependencyDagNodeNames = dependNodeTypeMap.keySet();
 
@@ -114,7 +114,7 @@ public class DagGraphBuilder {
 
             // add edge
             for (String dependencyDagNodeName : dependencyDagNodeNames) {
-                DagNode<?> dependNode = nodeMap.get(dependencyDagNodeName);
+                DagNode dependNode = nodeMap.get(dependencyDagNodeName);
                 if (dependNode == null) {
                     String errMsg = String.format("dependency node must not be null, node=%s, dependency=%s",
                             nodeName, dependencyDagNodeName);
@@ -145,13 +145,12 @@ public class DagGraphBuilder {
         }
 
 
-        NodeHandler<Object> startHandler = null;
+        NodeHandler startHandler = null;
         if (initMethod != null) {
             startHandler = DefaultNodeHandler.builder()
                     .handlerName(DagGraph.START_NODE_NAME)
                     .action((dagNode, dagContext) -> {
                         initMethod.accept(dagContext);
-                        return null;
                     }).build();
         }
 
@@ -174,13 +173,12 @@ public class DagGraphBuilder {
             throw new IllegalArgumentException("end nodes must not be empty");
         }
 
-        NodeHandler<Object> endHandler = null;
+        NodeHandler endHandler = null;
         if (endMethod != null) {
             endHandler = DefaultNodeHandler.builder()
                     .handlerName(DagGraph.END_NODE_NAME)
                     .action(dagContext -> {
                         endMethod.accept(dagContext);
-                        return null;
                     }).build();
         }
         endNode = DefaultDagNode.builder()

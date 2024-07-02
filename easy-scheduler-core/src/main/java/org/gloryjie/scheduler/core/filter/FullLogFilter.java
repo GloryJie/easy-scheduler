@@ -11,13 +11,12 @@ public class FullLogFilter implements DagNodeFilter {
 
 
     @Override
-    public Object invoke(DagNodeInvoker dagNodeInvoker, DagNode node, DagContext dagContext) {
+    public void invoke(DagNodeInvoker dagNodeInvoker, DagNode node, DagContext dagContext) {
 
         try {
             log.info("[FullLogFilter] before invoke node: {}, context={}", node, dagContext);
-            Object result = dagNodeInvoker.invoke(node, dagContext);
-            log.info("[FullLogFilter] after invoke node: {}, context={}, result={}", node, dagContext, result);
-            return result;
+            dagNodeInvoker.invoke(node, dagContext);
+            log.info("[FullLogFilter] after invoke node: {}, context={}", node, dagContext);
         } catch (Exception e) {
             log.error("[FullLogFilter] failed invoke node: {}, context={}", node, dagContext, e);
             throw e;

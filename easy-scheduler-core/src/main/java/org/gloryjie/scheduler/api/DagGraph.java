@@ -22,7 +22,7 @@ public interface DagGraph {
      *
      * @return a list of all nodes in the graph
      */
-    List<DagNode<?>> nodes();
+    List<DagNode> nodes();
 
     /**
      * Returns a node by its unique name.
@@ -30,7 +30,7 @@ public interface DagGraph {
      * @param nodeName The unique name of the node.
      * @return The node corresponding to the given name, or null if no node is found.
      */
-    DagNode<?> getNode(String nodeName);
+    DagNode getNode(String nodeName);
 
     /**
      * Returns the end node of the directed acyclic graph (DAG).
@@ -38,7 +38,7 @@ public interface DagGraph {
      *
      * @return The end node of the DAG.
      */
-    DagNode<?> getEndNode();
+    DagNode getEndNode();
 
     /**
      * Returns the start node of the Directed Acyclic Graph (DAG).
@@ -46,7 +46,7 @@ public interface DagGraph {
      *
      * @return The start node of the DAG.
      */
-    DagNode<?> getStartNode();
+    DagNode getStartNode();
 
     /**
      * Retrieves the in-degree information for all nodes.
@@ -61,7 +61,7 @@ public interface DagGraph {
      * @param nodeName The name of the node.
      * @return A list of successor nodes.
      */
-    List<DagNode<?>> getSuccessorNodes(String nodeName);
+    List<DagNode> getSuccessorNodes(String nodeName);
 
     DependencyType getNodeDepencencyType(String src, String end);
 

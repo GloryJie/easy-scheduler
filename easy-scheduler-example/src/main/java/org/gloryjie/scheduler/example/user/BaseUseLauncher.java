@@ -23,7 +23,6 @@ public class BaseUseLauncher {
                     UserContext context = (UserContext) dagContext.getContext();
                     UserInfo result = userService.getUserSimpleInfo(context.getUid());
                     context.setUserInfo(result);
-                    return result;
                 }).build();
 
 
@@ -34,7 +33,6 @@ public class BaseUseLauncher {
                     UserContext context = (UserContext) dagContext.getContext();
                     List<Course> courseList = userService.getCourseListByUid(context.getUid());
                     context.setCourseList(courseList);
-                    return courseList;
                 }).build();
 
         NodeHandler getCourseScoreListHandler = DefaultNodeHandler.builder()
@@ -47,22 +45,20 @@ public class BaseUseLauncher {
                                 .map(Course::getCourseId).collect(Collectors.toList());
                         List<CourseScore> courseScoreList = userService.getCourseScoreList(context.getUid(), courseIdList);
                         context.setCourseScoreList(courseScoreList);
-                        return courseIdList;
                     }
-                    return null;
                 }).build();
 
-        DagNode<UserContext> userInfoNode = DefaultDagNode.builder()
+        DagNode userInfoNode = DefaultDagNode.builder()
                 .nodeName("getUserInfo")
                 .handler(userInfoHandler)
                 .build();
 
-        DagNode<UserContext> courseList = DefaultDagNode.builder()
+        DagNode courseList = DefaultDagNode.builder()
                 .nodeName("courseList")
                 .handler(getCourseListHandler)
                 .build();
 
-        DagNode<UserContext> courseScoreList = DefaultDagNode.builder()
+        DagNode courseScoreList = DefaultDagNode.builder()
                 .nodeName("courseScoreList")
                 .handler(getCourseScoreListHandler)
                 .dependOn("courseList")

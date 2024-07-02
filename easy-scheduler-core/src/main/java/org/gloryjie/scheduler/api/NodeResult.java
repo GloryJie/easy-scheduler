@@ -1,6 +1,6 @@
 package org.gloryjie.scheduler.api;
 
-public interface NodeResult<T> {
+public interface NodeResult {
 
 
     /**
@@ -9,8 +9,6 @@ public interface NodeResult<T> {
      * @return the name of the node
      */
     String getNodeName();
-
-    T getResult();
 
     /**
      * Returns the state of the node.

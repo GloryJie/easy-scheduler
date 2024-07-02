@@ -19,63 +19,63 @@ public class BaseGraph {
         actionMap = actionMap == null ? new HashMap<>() : actionMap;
         dependMap = dependMap == null ? new HashMap<>() : dependMap;
         Map<String, DefaultDagNode.Builder> builderMap = new HashMap<>();
-        DefaultDagNode.Builder<Object> nodeBuilderA = DefaultDagNode.builder()
+        DefaultDagNode.Builder nodeBuilderA = DefaultDagNode.builder()
                 .nodeName("A")
                 .handler((dagNode, dagContext) -> {
-                    return "A";
+
                 });
         builderMap.put("A", nodeBuilderA);
 
-        DefaultDagNode.Builder<Object> nodeBuilderB = DefaultDagNode.builder()
+        DefaultDagNode.Builder nodeBuilderB = DefaultDagNode.builder()
                 .nodeName("B")
                 .handler((dagNode, dagContext) -> {
-                    return "B";
+
                 });
         builderMap.put("B", nodeBuilderB);
 
-        DefaultDagNode.Builder<Object> nodeBuilderC = DefaultDagNode.builder()
+        DefaultDagNode.Builder nodeBuilderC = DefaultDagNode.builder()
                 .nodeName("C")
                 .handler((dagNode, dagContext) -> {
-                    return "C";
+
                 });
         builderMap.put("C", nodeBuilderC);
 
 
-        DefaultDagNode.Builder<Object> nodeBuilderD = DefaultDagNode.builder()
+        DefaultDagNode.Builder nodeBuilderD = DefaultDagNode.builder()
                 .nodeName("D")
                 .handler((dagNode, dagContext) -> {
-                    return "D";
+
                 })
                 .dependOn("A", "B");
         builderMap.put("D", nodeBuilderD);
 
 
-        DefaultDagNode.Builder<Object> nodeBuilderE = DefaultDagNode.builder()
+        DefaultDagNode.Builder nodeBuilderE = DefaultDagNode.builder()
                 .nodeName("E")
                 .handler((dagNode, dagContext) -> {
-                    return "E";
+
                 })
                 .dependOn("B", "C");
         builderMap.put("E", nodeBuilderE);
 
-        DefaultDagNode.Builder<Object> nodeBuilderF = DefaultDagNode.builder()
+        DefaultDagNode.Builder nodeBuilderF = DefaultDagNode.builder()
                 .nodeName("F")
                 .handler((dagNode, dagContext) -> {
-                    return "F";
+
                 }).dependOn("D");
         builderMap.put("F", nodeBuilderF);
 
-        DefaultDagNode.Builder<Object> nodeBuilderG = DefaultDagNode.builder()
+        DefaultDagNode.Builder nodeBuilderG = DefaultDagNode.builder()
                 .nodeName("G")
                 .handler((dagNode, dagContext) -> {
-                    return "G";
+
                 }).dependOn("D", "E");
         builderMap.put("G", nodeBuilderG);
 
-        DefaultDagNode.Builder<Object> nodeBuilderH = DefaultDagNode.builder()
+        DefaultDagNode.Builder nodeBuilderH = DefaultDagNode.builder()
                 .nodeName("H")
                 .handler((dagNode, dagContext) -> {
-                    return "H";
+
                 }).dependOn("C");
         builderMap.put("H", nodeBuilderH);
 

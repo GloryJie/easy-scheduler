@@ -15,7 +15,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
-public class MethodNodeHandlerImpl implements NodeHandler<Object> {
+public class MethodNodeHandlerImpl implements NodeHandler {
 
 
     private final Object bean;
@@ -39,7 +39,7 @@ public class MethodNodeHandlerImpl implements NodeHandler<Object> {
 
 
     @Override
-    public Object execute(DagNode dagNode, DagContext dagContext) {
+    public void execute(DagNode dagNode, DagContext dagContext) {
 
         Object[] methodArg = null;
 
@@ -52,7 +52,7 @@ public class MethodNodeHandlerImpl implements NodeHandler<Object> {
 
         try {
             Object invokeResult = MethodUtils.invokeMethod(bean, method.getName(), methodArg);
-            return converterInvokeResult(dagNode, dagContext, invokeResult);
+            converterInvokeResult(dagNode, dagContext, invokeResult);
         } catch (Exception e) {
             String msg = String.format("Failed to invoke method: %s", method.getName());
             throw new DagEngineException(msg, e);

@@ -25,7 +25,6 @@ public class NodeExecuteTimeoutTest extends DagEngineProvide {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                return null;
             });
         }};
 
@@ -54,7 +53,7 @@ public class NodeExecuteTimeoutTest extends DagEngineProvide {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                return null;
+
             });
         }};
 
@@ -86,7 +85,6 @@ public class NodeExecuteTimeoutTest extends DagEngineProvide {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                return null;
             });
             put("D", (node, context) -> {
                 try {
@@ -94,7 +92,6 @@ public class NodeExecuteTimeoutTest extends DagEngineProvide {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                return null;
             });
             put("G", (node, context) -> {
                 try {
@@ -102,7 +99,6 @@ public class NodeExecuteTimeoutTest extends DagEngineProvide {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                return null;
             });
         }};
 

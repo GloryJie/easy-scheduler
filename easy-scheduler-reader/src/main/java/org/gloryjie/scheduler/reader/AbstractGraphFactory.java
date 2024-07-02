@@ -3,7 +3,6 @@ package org.gloryjie.scheduler.reader;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.gloryjie.scheduler.api.DagContext;
 import org.gloryjie.scheduler.api.DagGraph;
@@ -16,12 +15,11 @@ import org.gloryjie.scheduler.core.DefaultNodeHandler;
 import org.gloryjie.scheduler.reader.config.DagGraphConfigType;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -38,7 +36,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
     private static final DefinitionValidator definitionValidator = new DefinitionValidator();
     private final DagGraphReader graphReader;
 
-    private final ConcurrentHashMap<String, NodeHandler<Object>> handlerMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, NodeHandler> handlerMap = new ConcurrentHashMap<>();
 
     public AbstractGraphFactory() {
         this(new CompositeDagGraphReader());
@@ -74,7 +72,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
 
         List<DagNodeDefinition> nodeDefinitions = graphDefinition.getNodes();
         for (DagNodeDefinition nodeDefinition : nodeDefinitions) {
-            DagNode<?> dagNode = createDagNode(nodeDefinition);
+            DagNode dagNode = createDagNode(nodeDefinition);
             dagGraphBuilder.addNode(dagNode);
         }
 
@@ -118,9 +116,9 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
     }
 
 
-    protected DagNode<?> createDagNode(DagNodeDefinition nodeDefinition) {
+    protected DagNode createDagNode(DagNodeDefinition nodeDefinition) {
         // Get the original node handler from the handler registry if it exists
-        NodeHandler<Object> originalNodeHandler = null;
+        NodeHandler originalNodeHandler = null;
         if (StringUtils.isNotEmpty(nodeDefinition.getHandler())) {
             originalNodeHandler = this.getHandler(nodeDefinition.getHandler());
             if (originalNodeHandler == null) {
@@ -136,17 +134,17 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
         BiPredicate<DagNode, DagContext> predicate = createWhen(originalNodeHandler, nodeDefinition.getConditions());
 
         // Create the action for the handler
-        BiFunction<DagNode, DagContext, Object> action = createAction(originalNodeHandler, nodeDefinition);
+        BiConsumer<DagNode, DagContext> action = createAction(originalNodeHandler, nodeDefinition);
 
         // create new handler
-        NodeHandler<Object> handler = DefaultNodeHandler.builder()
+        NodeHandler handler = DefaultNodeHandler.builder()
                 .handlerName(handlerName)
                 .timeout(nodeDefinition.getTimeout())
                 .when(predicate)
                 .action(action)
                 .build();
 
-        DefaultDagNode.Builder<Object> builder = DefaultDagNode.<Object>builder()
+        DefaultDagNode.Builder builder = DefaultDagNode.<Object>builder()
                 .nodeName(nodeDefinition.getNodeName())
                 .dependOn(nodeDefinition.getDependsOn().toArray(new String[0]))
                 .timeout(nodeDefinition.getTimeout())
@@ -169,7 +167,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
      * @param conditions The list of conditions
      * @return The created predicate
      */
-    private BiPredicate<DagNode, DagContext> createWhen(NodeHandler<Object> handler, List<String> conditions) {
+    private BiPredicate<DagNode, DagContext> createWhen(NodeHandler handler, List<String> conditions) {
         // Create initial predicate based on the handler
         BiPredicate<DagNode, DagContext> predicate = null;
         if (handler != null) {
@@ -199,7 +197,7 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
      * @param nodeDefinition The node definition
      * @return The function that executes the handler and expression
      */
-    private BiFunction<DagNode, DagContext, Object> createAction(NodeHandler<Object> handler,
+    private BiConsumer<DagNode, DagContext> createAction(NodeHandler handler,
                                                                  DagNodeDefinition nodeDefinition) {
         List<String> actions = nodeDefinition.getActions();
 
@@ -216,54 +214,31 @@ public abstract class AbstractGraphFactory implements DagGraphFactory {
         // Create a function that execute the handler and expression
         final String fieldName = nodeDefinition.getRetFieldName();
         return (dagNode, dagContext) -> {
-
-            Object result = handler != null ? handler.execute(dagNode, dagContext) : null;
-
-            Object context = dagContext.getContext();
-            // Execute other actions
-            if (mergeExpressConsumer != null) {
-                mergeExpressConsumer.accept(dagContext);
-            }
-
-            // If the result is not null, set the field to context
-            if (result != null && StringUtils.isNotEmpty(fieldName)) {
-                try {
-                    // Get the field and set the value if it exists, otherwise put the value in dagContext
-                    if (context != null) {
-                        Field field = FieldUtils.getField(context.getClass(), fieldName, true);
-                        if (field != null && field.getType().isAssignableFrom(result.getClass())) {
-                            FieldUtils.writeField(field, context, result, true);
-                        } else {
-                            dagContext.put(fieldName, result);
-                        }
-                    } else {
-                        dagContext.put(fieldName, result);
-                    }
-                } catch (Exception e) {
-                    throw new DagEngineException(String.format("Failed to set field[%s] to context", fieldName), e);
+            if (handler != null) {
+                handler.execute(dagNode, dagContext);
+                // Execute other actions
+                if (mergeExpressConsumer != null) {
+                    mergeExpressConsumer.accept(dagContext);
                 }
             }
-
-            return result;
         };
     }
 
     @Nullable
     @Override
-    public NodeHandler<Object> getHandler(String handlerName) {
+    public NodeHandler getHandler(String handlerName) {
         return handlerMap.get(handlerName);
     }
 
 
-    @SuppressWarnings("unchecked")
     @Override
-    public synchronized void registerHandler(NodeHandler<?> handler) {
+    public synchronized void registerHandler(NodeHandler handler) {
         Objects.requireNonNull(handler, "Register handler cannot be null");
         Objects.requireNonNull(handler.handlerName(), "Register handler name cannot be null");
         if (getHandler(handler.handlerName()) != null) {
             throw new DagEngineException(String.format("Handler name[%s] already exists", handler.handlerName()));
         }
-        handlerMap.put(handler.handlerName(), (NodeHandler<Object>) handler);
+        handlerMap.put(handler.handlerName(), handler);
     }
 
 

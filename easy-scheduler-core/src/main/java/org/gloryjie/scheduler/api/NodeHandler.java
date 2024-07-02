@@ -1,7 +1,7 @@
 package org.gloryjie.scheduler.api;
 
 
-public interface NodeHandler<R> {
+public interface NodeHandler {
 
     /**
      * Returns the name of the handler.
@@ -20,7 +20,7 @@ public interface NodeHandler<R> {
      * @param dagContext The context for evaluation.
      * @return True if the evaluation is successful, false otherwise.
      */
-    default boolean evaluate(DagNode<Object> dagNode, DagContext dagContext) {
+    default boolean evaluate(DagNode dagNode, DagContext dagContext) {
         return true;
     }
 
@@ -32,7 +32,7 @@ public interface NodeHandler<R> {
      * @param dagContext The dagContext to be used during execution.
      * @return The result of the execution.
      */
-    R execute(DagNode<Object> dagNode, DagContext dagContext);
+    void execute(DagNode dagNode, DagContext dagContext);
 
 
     /**

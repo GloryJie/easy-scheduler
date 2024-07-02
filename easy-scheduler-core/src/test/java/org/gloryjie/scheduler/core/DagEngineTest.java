@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,7 +27,6 @@ public class DagEngineTest extends DagEngineProvide {
         AtomicInteger testExecute = new AtomicInteger(0);
         DagGraph dagGraph = buildOneNodeGraph((context -> {
             testExecute.set(1);
-            return "nodeResult";
         }));
 
         DagResult fireResult = dagEngine.fire(dagGraph, "testContext");
@@ -61,7 +60,6 @@ public class DagEngineTest extends DagEngineProvide {
         DagGraph dagGraph = buildOneNodeGraph((context -> {
             try {
                 TimeUnit.SECONDS.sleep(1);
-                return null;
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -74,22 +72,19 @@ public class DagEngineTest extends DagEngineProvide {
         assertInstanceOf(TimeoutException.class, fireResult.getThrowable());
     }
 
-    @SuppressWarnings({"all"})
-    private DagGraph buildOneNodeGraph(Function<DagContext, Object> action) {
+    private DagGraph buildOneNodeGraph(Consumer<DagContext> action) {
         NodeHandler printHandler = DefaultNodeHandler.builder()
                 .handlerName("A")
                 .when(context -> context.getContext() != null)
-                .action((action))
+                .action(action)
                 .build();
 
         DagNode dagNodeA = DefaultDagNode.builder().nodeName("A").handler(printHandler).build();
 
-        DagGraph dagGraph = new DagGraphBuilder()
+        return new DagGraphBuilder()
                 .graphName("test")
                 .addNodes(dagNodeA)
                 .build();
-
-        return dagGraph;
     }
 
 
@@ -100,7 +95,6 @@ public class DagEngineTest extends DagEngineProvide {
                 .when(context -> context.getContext() != null)
                 .action((dagNode, dagContext) -> {
                     System.out.println("Hello DagNode: " + dagNode.getNodeName());
-                    return null;
                 }).build();
 
         DagNode dagNodeA = DefaultDagNode.builder().nodeName("A").handler(printHandler).build();
@@ -141,14 +135,13 @@ public class DagEngineTest extends DagEngineProvide {
             actionMap.put(nodeName, (node, context) -> {
                 try {
                     if ("C".equals(nodeName) || "B".equals(nodeName)) {
-                        return null;
+                        return;
                     }
                     int i = ThreadLocalRandom.current().nextInt(10);
                     TimeUnit.MILLISECONDS.sleep(i);
                 } catch (InterruptedException e) {
                     //
                 }
-                return null;
             });
         }
 

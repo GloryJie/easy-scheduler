@@ -1,7 +1,7 @@
 package org.gloryjie.scheduler.core;
 
-import org.gloryjie.scheduler.api.DagNode;
 import com.google.common.collect.Sets;
+import org.gloryjie.scheduler.api.DagNode;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,9 +12,9 @@ public class DefaultDagNodeTest {
 
     @Test
     public void createDefaultDagNodeTest(){
-        DagNode<String> dagNode = DefaultDagNode.<String>builder()
+        DagNode dagNode = DefaultDagNode.builder()
                 .nodeName("A")
-                .handler(new DefaultNodeHandler<>("A", null, null, null))
+                .handler(new DefaultNodeHandler("A", null, null, null))
                 .dependOn("B", "C", "D")
                 .build();
 
